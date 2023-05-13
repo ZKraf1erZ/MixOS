@@ -1,4 +1,4 @@
 # MixOS 2.4 SP1
-For this time, this version in development process
+This version is currently in development
 
-Пока что это версия в разработке
+Пока что эта версия в разработке
