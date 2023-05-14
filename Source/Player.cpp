@@ -106,9 +106,11 @@ NOTIFYICONDATA notifyIconData;
 HBITMAP hWallpaperBitmap;
 BITMAP bm;
 HDC hCompatibleDC;
-bool bIsWallpaperSet;
+bool bIsWallpaperSet = false;
 
 RECT rcClient;
+
+//bool IsTopMost = false;
 
 //typedef NTSYSAPI NTSTATUS (NTAPI *LPFN_RTLGETVERSION)(
 //    OUT PRTL_OSVERSIONINFOW lpVersionInformation
@@ -441,6 +443,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             AppendMenu(hOptions, MF_STRING, polupon, "Включить полупрозрачность");
             AppendMenu(hOptions, MF_STRING, polupoff, "Выключить полупрозрачность");
             AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
+            AppendMenu(hOptions, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
+            AppendMenu(hOptions, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
+            AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
             AppendMenu(hOptions, /*WS_DISABLED|*/ MF_STRING , LOADDLL, "Загрузить плагины...");
             /*AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
             AppendMenu(hOptions, MF_STRING, GET_WINDOWS_VERSION, "Узнать версию Windows");*/
@@ -549,13 +554,13 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             /*  Слушай, как сделать так, чтобы текст был без фона белого?  */
 
 
-            CreateWindow(TEXT("BUTTON"), TEXT("Продолжить"), WS_VISIBLE | WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)PAUSE2, NULL, NULL);
+            CreateWindow(TEXT("BUTTON"), TEXT("Продолжить"), /*WS_VISIBLE |*/ WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)PAUSE2, NULL, NULL);
 
             hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\play.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
 
             SendMessage(GetDlgItem(hWnd, PAUSE2), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
 
-            CreateWindow(TEXT("BUTTON"), TEXT("Пауза"), WS_VISIBLE | WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)PAUSE1, NULL, NULL);
+            CreateWindow(TEXT("BUTTON"), TEXT("Пауза"), /*WS_VISIBLE |*/ WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)PAUSE1, NULL, NULL);
 
 
             hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\pause.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
@@ -563,8 +568,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(GetDlgItem(hWnd, PAUSE1), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
 
 
-            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_HIDE);
-            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
             // ShowWin
               //CreateWindow(TEXT("BUTTON"), TEXT("Очистить RAM"), WS_VISIBLE | WS_CHILD, 550, 600, 110, 20, hWnd, (HMENU)RAMRAM, NULL, NULL);
 
@@ -1543,7 +1548,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             ShowWindow(GetDlgItem(hWnd, SOUNDMASTA1), SW_HIDE);
             ShowWindow(FOR6COMPOSIT1, SW_HIDE);
 
-
+            
             ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
             ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
 
@@ -1759,7 +1764,25 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
         } break;
 
+        /*case MAKE_TOP_MOST_WINDOW: {
+            if (IsTopMost == false) {
+                SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+                ModifyMenu(GetMenu(hWnd), MAKE_TOP_MOST_WINDOW, MF_CHECKED, MAKE_TOP_MOST_WINDOW, NULL);
+                IsTopMost = true;
+            } else {
+                SetWindowPos(hWnd, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+                ModifyMenu(GetMenu(hWnd), MAKE_TOP_MOST_WINDOW, MF_BYCOMMAND | MF_UNCHECKED, MAKE_TOP_MOST_WINDOW, NULL);
+                IsTopMost = false;
+            }
+        } break;*/
 
+        case MAKE_TOP_MOST_WINDOW:
+            SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+            break;
+
+        case MAKE_TOP_WINDOW:
+            SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+            break;
 
         //case KORZINA:
         //{
