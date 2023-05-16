@@ -1334,7 +1334,8 @@
 //
 //int WINAPI main() 
 //{
-//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
+//    //SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
+//    SetThreadUILanguage(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA));
 //    WNDCLASS op;
 //    ZeroMemory(&op, sizeof(WNDCLASS)); 
 //    op.lpfnWndProc = wnd_proc;
