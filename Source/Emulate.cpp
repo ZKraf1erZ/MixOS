@@ -37,18 +37,25 @@
 //PAINTSTRUCT ps;
 //HWND hTrack;
 //int skins;
-//TCHAR StrT[MAX_PATH];
-//HANDLE bmpwall;
-//HANDLE bmpwall1;
-//HWND hwall;
-//HWND eMp3;
+//TCHAR *StrT = str1;
+////HANDLE bmpwall;
+////HANDLE bmpwall1;
+////HWND hwall;
+////HWND eMp3;
 //HINSTANCE hInst;
 //HICON progicon;
 //const TCHAR progname[] = _T("Список эмуляторов из MixOS");
 //
 //static DWORD rgbCurrent = RGB(72, 161, 139);
+//DWORD rgbTextColor = RGB(255, 255, 255);
 //
 //NOTIFYICONDATA NotifyIconData;
+//
+//HBITMAP hWallpaperBitmap;
+//HDC hCompatibleDC;
+//BITMAP bm;
+//bool bIsWallpaperSet;
+//RECT rcClient;
 //
 ////int g_i = 0;
 ////
@@ -153,15 +160,22 @@
 //        AppendMenu(hColor, MF_STRING, STANDARTA, "Стандартный");
 //        AppendMenu(hColor, MF_STRING, STRACOLOR, "Strannik");
 //        AppendMenu(hColor, MF_SEPARATOR, NULL, NULL);
-//        AppendMenu(hColor, MF_STRING, COLOREMU,"Мой цвет");
+//        AppendMenu(hColor, MF_STRING, COLOREMU, "Мой цвет");
+//        AppendMenu(hColor, MF_STRING, TEXT_COLOR, "Сменить цвет текста");
+//        //AppendMenu(hColor, MF_STRING, BLACK_TEXT_COLOR, "Сменить цвет текста на черный");
+//        AppendMenu(hColor, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hColor, MF_STRING, SKINEMU, "Сменить фон на картинку");
+//        AppendMenu(hColor, MF_STRING, CLEARSKIN, "Удалить картинку");
 //        AppendMenu(hColor, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hColor, MF_STRING, polupon, "Включить полупрозрачность");
 //        AppendMenu(hColor, MF_STRING, polupoff, "Выключить полупрозрачность");
+//        AppendMenu(hColor, MF_SEPARATOR, NULL, NULL);
+//        AppendMenu(hColor, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
+//        AppendMenu(hColor, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
 //
 //
 //        SetClassLong(hWnd, GCL_STYLE, GetClassLong(hWnd, GCL_STYLE));
-//        CreateWindow(TEXT("STATIC"), TEXT("Список эмуляторов версия 2.1"), WS_VISIBLE | WS_CHILD, 500, 18, 210-5, 18, hWnd, (HMENU)text1, NULL, NULL);
+//        CreateWindow(TEXT("STATIC"), TEXT("Список эмуляторов версия 2.1 SP1"), WS_VISIBLE | WS_CHILD, 500 + 5, 18, /*210-5*/ 240, 18, hWnd, (HMENU)text1, NULL, NULL);
 //        SetMenu(hWnd, hMenubar);
 //        BASS_Init(-1, 44100, 0, 0, NULL);
 //
@@ -390,12 +404,14 @@
 //        // Можешь тогда сделать так, чтобы окно по центру экрана спавнилось?
 //        // покажи   ОООЛ ПОЛУЧИЛОСЬ   Вот только звук и его громкость не меняется
 //
-//        eMp3 = CreateWindow(TEXT("Edit"), NULL, WS_EX_CLIENTEDGE | WS_BORDER | WS_CHILD | WS_VISIBLE, 120, 50, 1000 + 30, 20, hWnd, (HMENU)SKINSSTRO, NULL, 0);
-//        ShowWindow(GetDlgItem(hWnd, SKINSSTRO), SW_HIDE);
+//        /*eMp3 = CreateWindow(TEXT("Edit"), NULL, WS_EX_CLIENTEDGE | WS_BORDER | WS_CHILD | WS_VISIBLE, 120, 50, 1000 + 30, 20, hWnd, (HMENU)SKINSSTRO, NULL, 0);
+//        ShowWindow(GetDlgItem(hWnd, SKINSSTRO), SW_HIDE);*/
 //        ShowWindow(GetDlgItem(hWnd, TITLE), SW_HIDE);
 //        ShowWindow(GetDlgItem(hWnd, TITLESTOP), SW_SHOW);
 //
 //        //CreateWindow(TEXT("BUTTON"), TEXT("Test animation"), WS_VISIBLE | WS_CHILD, 20, 640 + 40, 150 + 20 + 10 + 5, 35, hWnd, (HMENU)TEST_ANIMATION, NULL, NULL);
+//
+//        GetClientRect(hWnd, &rcClient);
 //
 //        break;
 //    }
@@ -411,13 +427,13 @@
 //
 //        if (LOWORD(wParam) == polupon)
 //        {
-//
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_LAYERED);
 //            SetLayeredWindowAttributes(hWnd, NULL, 220, LWA_ALPHA);
 //        }
 //        if (LOWORD(wParam) == polupoff)
 //        {
-//
 //            SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
 //        }
 //
 //
@@ -581,6 +597,15 @@
 //            system("start MusicPlayer\\SUBS\\NBR\\ru4en.hta");
 //        }
 //
+//        if (LOWORD(wParam) == CLEARSKIN) {
+//            if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }
+//            if (bIsWallpaperSet == true)
+//                bIsWallpaperSet = false;
+//            RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//        }
 //
 //        if (LOWORD(wParam) == REDA)
 //        {
@@ -593,7 +618,7 @@
 //        BASS_SampleFree(TITLED);
 //        BASS_Start();
 //
-//        DestroyWindow(hwall);
+//        /*DestroyWindow(hwall);
 //
 //        bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //        bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -605,7 +630,13 @@
 //            SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //            SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//        }
+//        }*/
+//
+//        /*if (hWallpaperBitmap != NULL) {
+//            DeleteObject(hWallpaperBitmap);
+//            hWallpaperBitmap = NULL;
+//        }*/
+//
 //        TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title7.mp3", 0, 0, 0);
 //        BASS_ChannelPlay(TITLED, false);
 //        rgbCurrent = RGB(204, 0, 0);
@@ -622,19 +653,23 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
-//
-//            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
-//            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
-//
-//            if (bmpwall != NULL);
-//            {
-//
-//                hwall = CreateWindow("STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP | WS_BORDER, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
-//                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
-//                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
-//
-//            }
+//           //DestroyWindow(hwall);
+//           //
+//           //bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//           //bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//           //
+//           //if (bmpwall != NULL);
+//           //{
+//           //
+//           //    hwall = CreateWindow("STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP | WS_BORDER, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
+//           //    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
+//           //    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
+//           //
+//           //}
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title1.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(255, 128, 0);
@@ -651,19 +686,23 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
-//
-//            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
-//            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
-//
-//            if (bmpwall != NULL);
-//            {
-//
-//                hwall = CreateWindow("STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP | WS_BORDER, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
-//                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
-//                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
-//
-//            }
+//            //DestroyWindow(hwall);
+//            //
+//            //bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//            //bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//            //
+//            //if (bmpwall != NULL);
+//            //{
+//            //
+//            //    hwall = CreateWindow("STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP | WS_BORDER, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
+//            //    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
+//            //    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
+//            //
+//            //}
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title6.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(205, 205, 0);
@@ -680,7 +719,7 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
+//            /*DestroyWindow(hwall);
 //
 //            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -692,7 +731,11 @@
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//            }
+//            }*/
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title2.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(0, 153, 0);
@@ -709,7 +752,7 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
+//            /*DestroyWindow(hwall);
 //
 //            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -721,7 +764,11 @@
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//            }
+//            }*/
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title3.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(0, 205, 205);
@@ -738,7 +785,7 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);   
 //            BASS_Start();
-//            DestroyWindow(hwall);
+//            /*DestroyWindow(hwall);
 //
 //            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -750,7 +797,11 @@
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//            }
+//            }*/
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title5.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(0, 0, 200);
@@ -767,7 +818,7 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
+//            /*DestroyWindow(hwall);
 //
 //            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -779,7 +830,11 @@
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//            }
+//            }*/
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title4.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(51, 0, 102);
@@ -796,7 +851,7 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
+//            /*DestroyWindow(hwall);
 //
 //            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -808,7 +863,11 @@
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//            }
+//            }*/
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\title.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(72, 161, 139);
@@ -825,7 +884,7 @@
 //            BASS_ChannelStop(TITLED);
 //            BASS_SampleFree(TITLED);
 //            BASS_Start();
-//            DestroyWindow(hwall);
+//            /*DestroyWindow(hwall);
 //
 //            bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //            bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
@@ -837,7 +896,11 @@
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//            }
+//            }*/
+//            /*if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }*/
 //            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\HTM.mp3", 0, 0, 0);
 //            BASS_ChannelPlay(TITLED, false);
 //            rgbCurrent = RGB(142, 97, 38);
@@ -862,21 +925,25 @@
 //            {
 //                hBrush = CreateSolidBrush(cc.rgbResult);
 //                rgbCurrent = cc.rgbResult;
+//
+//                InvalidateRect(hWnd, NULL, FALSE);   // ТО АХРИНЕТЬ ОХУЕТЬ ТОЧНЕЕ. Теперь надо такое же добавить в Терминал... И в Пианино... И еще много куда...
+//
+//                ShowWindow(GetDlgItem(hWnd, TITLESTOP), SW_HIDE);
+//                ShowWindow(GetDlgItem(hWnd, TITLE), SW_HIDE);
+//                //DestroyWindow(hwall);
+//                /*if (hWallpaperBitmap != NULL) {
+//                    DeleteObject(hWallpaperBitmap);
+//                    hWallpaperBitmap = NULL;
+//                }*/
+//                BASS_Stop();
+//                BASS_Start();
+//                BASS_StreamFree(TITLED);
+//                BASS_ChannelStop(TITLED);
+//                BASS_SampleFree(TITLED);
+//                BASS_Start();
+//                TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\Youtube.mp3", 0, 0, 0);
+//                BASS_ChannelPlay(TITLED, false);
 //            }
-//
-//            InvalidateRect(hWnd, NULL, FALSE);   // ТО АХРИНЕТЬ ОХУЕТЬ ТОЧНЕЕ. Теперь надо такое же добавить в Терминал... И в Пианино... И еще много куда...
-//
-//            ShowWindow(GetDlgItem(hWnd, TITLESTOP), SW_HIDE);
-//            ShowWindow(GetDlgItem(hWnd, TITLE), SW_HIDE);
-//            DestroyWindow(hwall);
-//            BASS_Stop();
-//            BASS_Start();
-//            BASS_StreamFree(TITLED);
-//            BASS_ChannelStop(TITLED);
-//            BASS_SampleFree(TITLED);
-//            BASS_Start();
-//            TITLED = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\Youtube.mp3", 0, 0, 0);
-//            BASS_ChannelPlay(TITLED, false);
 //        }
 //
 //
@@ -917,7 +984,7 @@
 //
 //            if (GetOpenFileName(&ofnn) == TRUE)
 //            {
-//                SetWindowText(eMp3, str1);
+//                /*SetWindowText(eMp3, str1);
 //
 //                DestroyWindow(hwall);
 //
@@ -933,6 +1000,16 @@
 //                    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
+//                }*/
+//                if (hWallpaperBitmap != NULL) {
+//                    DeleteObject(hWallpaperBitmap);
+//                    //hWallpaperBitmap = NULL;
+//                }
+//                hWallpaperBitmap = (HBITMAP)LoadImage(NULL, StrT, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                if (hWallpaperBitmap != NULL) {
+//                    GetObject(hWallpaperBitmap, sizeof(bm), &bm);
+//                    if (bIsWallpaperSet == false) bIsWallpaperSet = true;
+//                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 //                }
 //                /*CreateWindow(TEXT("BUTTON"), TEXT("Установить"), WS_VISIBLE | WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)INSTBKG, NULL, NULL);*/
 //            }
@@ -973,7 +1050,35 @@
 //
 //
 //
+//                if (LOWORD(wParam) == TEXT_COLOR) {
+//                    CHOOSECOLOR cc;
+//                    static COLORREF acrCustClr[16]; // массив доп. цветов
 //
+//                    ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+//                    cc.lStructSize = sizeof(CHOOSECOLOR);
+//                    cc.hwndOwner = hWnd;
+//                    cc.lpCustColors = (LPDWORD)acrCustClr;
+//                    cc.rgbResult = rgbTextColor;
+//                    cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+//
+//                    if (ChooseColor(&cc) == TRUE) {
+//                        //hBrush = CreateSolidBrush(cc.rgbResult);
+//                        rgbTextColor = cc.rgbResult;
+//                        //InvalidateRect(hWnd, NULL, FALSE);
+//                        RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//                    }
+//                }
+//
+//                if (LOWORD(wParam) == MAKE_TOP_MOST_WINDOW)
+//                    SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+//
+//                if (LOWORD(wParam) == MAKE_TOP_WINDOW)
+//                    SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+//
+//                /*if (LOWORD(wParam) ==  BLACK_TEXT_COLOR) {
+//                    rgbTextColor = RGB(0, 0, 0);
+//                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//                };*/
 //
 //
 //        break;
@@ -1020,7 +1125,11 @@
 //                    SendMessage(hWnd, WM_COMMAND, MYCOLOR, 0);
 //                    break;
 //                case '1':
-//                    DestroyWindow(hwall);
+//                    //DestroyWindow(hwall);
+//                    if (hWallpaperBitmap != NULL) {
+//                        DeleteObject(hWallpaperBitmap);
+//                        //hWallpaperBitmap = NULL;
+//                    }
 //                    BASS_Stop();
 //                    BASS_Start();
 //                    BASS_StreamFree(TITLED);
@@ -1031,17 +1140,23 @@
 //                    BASS_ChannelPlay(TITLED, false);
 //
 //                    
-//                    bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
-//                    bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                    /*bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                    bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);*/
+//                    hWallpaperBitmap = (HBITMAP)LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                    if (hWallpaperBitmap != NULL) {
+//                        GetObject(hWallpaperBitmap, sizeof(bm), &bm);
+//                        if (bIsWallpaperSet == false) bIsWallpaperSet = true;
+//                        RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//                    }
 //
-//                    if (bmpwall != NULL);
+//                    /*if (bmpwall != NULL);
 //                    {
 //
 //                        hwall = CreateWindow("STATIC", NULL, WS_CHILD | WS_VISIBLE | SS_BITMAP | WS_BORDER, 0, 0, 0, 0, hWnd, NULL, NULL, NULL);
 //                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
-//                    }
+//                    }*/
 //
 //
 //
@@ -1053,7 +1168,11 @@
 //
 //                case '2':
 //
-//                    DestroyWindow(hwall);
+//                    //DestroyWindow(hwall);
+//                    if (hWallpaperBitmap != NULL) {
+//                        DeleteObject(hWallpaperBitmap);
+//                        //hWallpaperBitmap = NULL;
+//                    }
 //                    BASS_Stop();
 //                    BASS_Start();
 //                    BASS_StreamFree(TITLED);
@@ -1064,7 +1183,7 @@
 //                    BASS_ChannelPlay(TITLED, false);
 //
 //
-//                    bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                   /* bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //                    bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //
 //                    if (bmpwall != NULL);
@@ -1074,9 +1193,14 @@
 //                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
+//                    }*/
+//
+//                    hWallpaperBitmap = (HBITMAP)LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature1.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                    if (hWallpaperBitmap != NULL) {
+//                        GetObject(hWallpaperBitmap, sizeof(bm), &bm);
+//                        if (bIsWallpaperSet == false) bIsWallpaperSet = true;
+//                        RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 //                    }
-//
-//
 //
 //
 //
@@ -1084,7 +1208,11 @@
 //
 //                case '3':
 //
-//                    DestroyWindow(hwall);
+//                    //DestroyWindow(hwall);
+//                    if (hWallpaperBitmap != NULL) {
+//                        DeleteObject(hWallpaperBitmap);
+//                        //hWallpaperBitmap = NULL;
+//                    }
 //                    BASS_Stop();
 //                    BASS_Start();
 //                    BASS_StreamFree(TITLED);
@@ -1095,7 +1223,7 @@
 //                    BASS_ChannelPlay(TITLED, false);
 //
 //
-//                    bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                    /*bmpwall = LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //                    bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
 //
 //                    if (bmpwall != NULL);
@@ -1105,8 +1233,13 @@
 //                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
+//                    }*/
+//                    hWallpaperBitmap = (HBITMAP)LoadImage(NULL, "MusicPlayer\\BMP\\MIXEMULATE\\Nature2.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                    if (hWallpaperBitmap != NULL) {
+//                        GetObject(hWallpaperBitmap, sizeof(bm), &bm);
+//                        if (bIsWallpaperSet == false) bIsWallpaperSet = true;
+//                        RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 //                    }
-//
 //
 //
 //
@@ -1135,13 +1268,30 @@
 //
 //        case WM_PAINT: {
 //    hdc = BeginPaint(hWnd, &ps);
-//    FillRect(hdc, &ps.rcPaint, hBrush);
+//    if (bIsWallpaperSet == true) {
+//        hCompatibleDC = CreateCompatibleDC(hdc);
+//    
+//        SelectObject(hCompatibleDC, hWallpaperBitmap);
+//        SetStretchBltMode(hdc, HALFTONE);
+//        SetBrushOrgEx(hdc, 0, 0, NULL);
+//        StretchBlt(hdc, 0, 0, rcClient.right, rcClient.bottom, hCompatibleDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+//    
+//        DeleteDC(hCompatibleDC);
+//    } else {
+//        FillRect(hdc, &ps.rcPaint, hBrush);
+//    }
 //    EndPaint(hWnd, &ps);
 //
 //}
 //             break;
 //    case WM_DESTROY: {
+//        //free_samples_all();
+//        BASS_Free();
+//        /*SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+//        SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);*/
 //        Shell_NotifyIcon(NIM_DELETE, &NotifyIconData);
+//        if (bIsWallpaperSet == true) DeleteObject(hWallpaperBitmap);
+//        DeleteObject(hBrush);
 //        PostQuitMessage(0);
 //
 //        break;
@@ -1154,7 +1304,7 @@
 //        {
 //            HDC hdcStatic = (HDC)wParam;
 //            // or obtain the static handle in some other way
-//            SetTextColor(hdcStatic, RGB(255, 255, 255)); // text color
+//            SetTextColor(hdcStatic, rgbTextColor); // text color
 //            SetBkColor(hdcStatic, rgbCurrent);
 //            return (LRESULT)GetStockObject(NULL_BRUSH);
 //
@@ -1163,7 +1313,7 @@
 //        {
 //            HDC hdcStatic = (HDC)wParam;
 //            // or obtain the static handle in some other way
-//            SetTextColor(hdcStatic, RGB(255, 255, 255)); // text color
+//            SetTextColor(hdcStatic, rgbTextColor); // text color
 //
 //            SetBkColor(hdcStatic, rgbCurrent);
 //
@@ -1184,13 +1334,14 @@
 //
 //int WINAPI main() 
 //{
+//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
 //    WNDCLASS op;
 //    ZeroMemory(&op, sizeof(WNDCLASS)); 
 //    op.lpfnWndProc = wnd_proc;
 //    op.hInstance = GetModuleHandle(NULL);
 //    op.lpszClassName = "test32cls";
 //    op.hCursor = LoadCursor(NULL, IDC_ARROW);
-//    op.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
+//    op.hbrBackground = /*(HBRUSH)(COLOR_BTNFACE + 1)*/ NULL;
 //    progicon = (HICON)LoadImage(op.hInstance, "MusicPlayer\\BMP\\ico\\Emulate.ico", IMAGE_ICON, 48, 48, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
 //    op.hIcon = progicon;
 //
@@ -1200,7 +1351,7 @@
 //
 //    //Вот тут видишь, всё работает исправно, и цвет меняется и всё остальное. И при этом звук не дублируется. По-любому, где- то в Youtube.cpp мы забыли BassSTOP
 //
-//    CreateWindowEx(WS_EX_LAYERED,op.lpszClassName, "Эмуляторы", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS, 100, 100, 1280, 800 /*625*/, NULL, NULL, op.hInstance, NULL);
+//    CreateWindowEx(/*WS_EX_LAYERED*/ 0,op.lpszClassName, "Эмуляторы", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE | WS_CLIPSIBLINGS, 100, 100, 1280, 800 /*625*/, NULL, NULL, op.hInstance, NULL);
 //    MSG msg;
 //    while (GetMessage(&msg, NULL, 0, 0)) {
 //        TranslateMessage(&msg);

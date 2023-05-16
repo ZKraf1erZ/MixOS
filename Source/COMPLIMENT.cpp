@@ -353,8 +353,8 @@
 //
 //int WINAPI main()
 //{
-// 
-//    SetProcessDPIAware();
+//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
+//    //SetProcessDPIAware();
 //    WNDCLASS op;
 //    ZeroMemory(&op, sizeof(WNDCLASS));
 //    op.lpfnWndProc = wnd_proc;

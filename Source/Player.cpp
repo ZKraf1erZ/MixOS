@@ -69,7 +69,7 @@ PAINTSTRUCT ps; //создаём экземпляр структуры граф�
 LOGFONT lf;
 RECT r;
 HPEN hPen;
-HBRUSH hBrush = CreateSolidBrush(RGB(0, 76, 153));
+HBRUSH hBrush = CreateSolidBrush(RGB(0, 76, 153)); // 0 118 236
 //HBRUSH hLightBlueBrush = CreateSolidBrush(RGB(0, 191, 255));
 HFONT hFont;
 HWND hTrack;
@@ -90,14 +90,14 @@ TCHAR StrT[MAX_PATH];
 //HANDLE bmpwall1;
 //HWND hwall;
 
-TCHAR progname[] = _T("MixOS Beta 2.4");
+TCHAR progname[] = _T("MixOS Beta 2.4 SP1");
 HICON progicon;
 HINSTANCE hInst;
 
 static COLORREF acrCustClr[16]; 
 static DWORD rgbCurrent1 = RGB(0, 76, 153);        
 static DWORD rgbCurrent = RGB(0, 76, 153);
-static DWORD rgbTextColor = RGB(255, 255, 255);
+static DWORD rgbTextColor = RGB(255, 255, 255); // 193 209 240
 
 inline void free_samples_all();
 
@@ -216,9 +216,12 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\Color.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
         SendMessage(GetDlgItem(hWnd, MYCOLOR), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
 
-        CreateWindow("BUTTON", "Загрузить плагины", WS_VISIBLE | WS_CHILD, 830, 80 - 30 - 30 + 30, 320, 20, hWnd, (HMENU)LOADDLL, NULL, NULL);
+        /*CreateWindow("BUTTON", "Загрузить плагины", WS_VISIBLE | WS_CHILD, 830, 80 - 30 - 30 + 30, 320, 20, hWnd, (HMENU)LOADDLL, NULL, NULL);
         hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\download.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
-        SendMessage(GetDlgItem(hWnd, LOADDLL), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
+        SendMessage(GetDlgItem(hWnd, LOADDLL), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);*/
+        CreateWindow("BUTTON", "Сменить цвет текста", WS_VISIBLE | WS_CHILD, 830, 80 - 30 - 30 + 30, 320, 20, hWnd, (HMENU)TEXT_COLOR, NULL, NULL);
+        hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\textcolor.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+        SendMessage(GetDlgItem(hWnd, TEXT_COLOR), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
 
         //SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_ACCEPTFILES);
 
@@ -237,7 +240,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             
             case ID_BUTTON:
         {
-            SetWindowText(hWnd, "MixPlayer из MixOS Beta 2.4");
+            SetWindowText(hWnd, "MixPlayer из MixOS Beta 2.4 SP1");
 
             HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
             HICON hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\MixOS.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
@@ -246,7 +249,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             DestroyWindow(GetDlgItem(hWnd, CLEARSKIN));
             DestroyWindow(GetDlgItem(hWnd, polupoff));
             DestroyWindow(GetDlgItem(hWnd, polupon));
-            DestroyWindow(GetDlgItem(hWnd, LOADDLL));
+            DestroyWindow(GetDlgItem(hWnd, /*LOADDLL*/ TEXT_COLOR));
             DestroyWindow(GetDlgItem(hWnd, MYCOLOR));
             //DestroyWindow(GetDlgItem(hWnd, SKINSSTRO));
             ShowWindow(GetDlgItem(hWnd, SKINSSTRO), SW_HIDE);
@@ -424,8 +427,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 
             AppendMenu(hOptions, MF_STRING, MYCOLOR, "Сменить цвет");
-            AppendMenu(hOptions, MF_STRING, WHITE_TEXT_COLOR, "Сменить цвет текста на белый");
-            AppendMenu(hOptions, MF_STRING, BLACK_TEXT_COLOR, "Сменить цвет текста на черный");
+            /*AppendMenu(hOptions, MF_STRING, WHITE_TEXT_COLOR, "Сменить цвет текста на белый");
+            AppendMenu(hOptions, MF_STRING, BLACK_TEXT_COLOR, "Сменить цвет текста на черный");*/
+            AppendMenu(hOptions, MF_STRING, TEXT_COLOR, "Сменить цвет текста");
             //AppendMenu(hOptions, MF_STRING, MYFONT, "Сменить шрифт");
             AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
             AppendMenu(hOptions, MF_STRING, SETBKG, "Сменить фон на картинку");
@@ -541,7 +545,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
             SendMessage(GetDlgItem(hWnd, STOPS), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
 
-            CreateWindow(TEXT("BUTTON"), TEXT("Перейти к своим файлам"), WS_VISIBLE | WS_CHILD, 150, 500, 300, 70, hWnd, (HMENU)FILEY2, NULL, NULL);
+            CreateWindow(TEXT("BUTTON"), /*TEXT("Перейти к своим файлам")*/ TEXT("Открыть свой файл"), WS_VISIBLE | WS_CHILD, 150, 500, 300, 70, hWnd, (HMENU)FILEY2, NULL, NULL);
 
             //hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\instskin.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
 
@@ -1577,6 +1581,15 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             BASS_Stop();
             BASS_Start();
 
+            int argc = __argc;
+            char **argv = __argv;
+
+            if (argc > 1) {
+                for (int i = 1; i < argc; i++) {
+                    SendMessage(playlist, LB_ADDSTRING, 0, (LPARAM)argv[i]);
+                }
+            }
+
             //int len;
             //TCHAR *StrB = str1;
             //BASS_ChannelStop(stro);
@@ -1599,7 +1612,10 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
         case LOADDLL:
         {
-            system("start MusicPlayer\\DWL\\MixDownload.exe");   
+            if (MessageBox(hWnd, "Запустить от имени администратора?", "Загрузить плагины", MB_ICONQUESTION | MB_YESNO) == IDYES)
+                ShellExecute(NULL, "runas", "MusicPlayer\\DWL\\MixDownload.exe", NULL, NULL, SW_SHOWDEFAULT);
+            else
+                system("start MusicPlayer\\DWL\\MixDownload.exe");
         } break;
 
         case QUEST:
@@ -1753,8 +1769,27 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
                 ExitWindowsEx(EWX_RESTARTAPPS, NULL);
         } break;
 
+        case TEXT_COLOR: {
+            CHOOSECOLOR cc;
+            static COLORREF acrCustClr[16]; // массив доп. цветов
 
-        case WHITE_TEXT_COLOR: {
+            ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+            cc.lStructSize = sizeof(CHOOSECOLOR);
+            cc.hwndOwner = hWnd;
+            cc.lpCustColors = (LPDWORD)acrCustClr;
+            cc.rgbResult = rgbTextColor;
+            cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+
+            if (ChooseColor(&cc) == TRUE) {
+//              hBrush = CreateSolidBrush(cc.rgbResult);
+                rgbTextColor = cc.rgbResult;
+                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+            }
+
+            
+        } break;
+
+        /*case TEXT_COLOR: {
             rgbTextColor = RGB(255, 255, 255);
             RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
         } break;
@@ -1762,7 +1797,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         case BLACK_TEXT_COLOR: {
             rgbTextColor = RGB(0, 0, 0);
             RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
-        } break;
+        } break;*/
 
         /*case MAKE_TOP_MOST_WINDOW: {
             if (IsTopMost == false) {
@@ -1990,6 +2025,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
     case WM_DESTROY:
         free_samples_all();
         BASS_Free();
+        //SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+        //SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
         Shell_NotifyIcon(NIM_DELETE, &notifyIconData);
         if (bIsWallpaperSet == true) DeleteObject(hWallpaperBitmap);
         DeleteObject(hBrush);
@@ -2199,6 +2236,8 @@ int WINAPI main(/*int argc, char* argv[]*/)
     //} 
 
     //SetProcessDPIAware();
+
+    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
 
     WNDCLASS wc;
     ZeroMemory(&wc, sizeof(WNDCLASS));

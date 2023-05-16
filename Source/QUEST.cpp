@@ -49,6 +49,7 @@
 //static COLORREF acrCustClr[16];
 //HBRUSH hBrush = CreateSolidBrush(RGB(255, 128, 0));
 //static DWORD rgbCurrent = RGB(255, 128, 0);
+//DWORD rgbTextColor = RGB(255, 255, 255);
 //HWND hTrack;
 //HDC hdc;
 //PAINTSTRUCT ps;
@@ -103,9 +104,13 @@
 //
 //
 //        AppendMenu(hOptions, MF_STRING, MYCOLOR, "Сменить цвет");
+//        AppendMenu(hOptions, MF_STRING, TEXT_COLOR, "Сменить цвет текста");
 //        AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hOptions, MF_STRING, polupon, "Включить полупрозрачность");
 //        AppendMenu(hOptions, MF_STRING, polupoff, "Выключить полупрозрачность");
+//        AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
+//        AppendMenu(hOptions, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
+//        AppendMenu(hOptions, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
 //
 //        SetMenu(hWnd, hMenubar);
 //        BASS_Init(-1, 44100, 0, 0, NULL);
@@ -122,17 +127,41 @@
 //        
 //        //ShowWindow(GetDlgItem(hWnd, LENMUSIC), SW_SHOW);
 //
+//        if (LOWORD(wParam) == MAKE_TOP_MOST_WINDOW)
+//            SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
 //
+//        if (LOWORD(wParam) == MAKE_TOP_WINDOW)
+//            SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+//
+//        if (LOWORD(wParam) == TEXT_COLOR) {
+//            CHOOSECOLOR cc;
+//            static COLORREF acrCustClr[16]; // массив доп. цветов
+//
+//            ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+//            cc.lStructSize = sizeof(CHOOSECOLOR);
+//            cc.hwndOwner = hWnd;
+//            cc.lpCustColors = (LPDWORD)acrCustClr;
+//            cc.rgbResult = rgbTextColor;
+//            cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+//
+//            if (ChooseColor(&cc) == TRUE) {
+//                //hBrush = CreateSolidBrush(cc.rgbResult);
+//                rgbTextColor = cc.rgbResult;
+//                //InvalidateRect(hWnd, NULL, FALSE);
+//                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//            }
+//        }
 //
 //        if (LOWORD(wParam) == polupon)
 //        {
-//
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_LAYERED);
 //            SetLayeredWindowAttributes(hWnd, NULL, 230, LWA_ALPHA);
 //        }
 //        if (LOWORD(wParam) == polupoff)
 //        {
 //
 //            SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
 //        }
 //
 //
@@ -783,7 +812,7 @@
 //        {
 //            HDC hdcStatic = (HDC)wParam;
 //            // or obtain the static handle in some other way
-//            SetTextColor(hdcStatic, RGB(255, 255, 255)); // text color
+//            SetTextColor(hdcStatic, rgbTextColor); // text color
 //
 //            SetBkColor(hdcStatic, rgbCurrent);
 //
@@ -837,6 +866,8 @@
 //    //    break;
 //
 //    case WM_DESTROY: {
+//        BASS_Free();
+//        DeleteObject(hBrush);
 //        Shell_NotifyIcon(NIM_DELETE, &nid);
 //        PostQuitMessage(0);
 //        break;
@@ -853,8 +884,8 @@
 //
 //int WINAPI main()
 //{
-// 
-//    SetProcessDPIAware();
+//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
+//    //SetProcessDPIAware();
 //    WNDCLASS op;
 //    ZeroMemory(&op, sizeof(WNDCLASS));
 //    op.lpfnWndProc = wnd_proc;
@@ -868,7 +899,7 @@
 //    RegisterClass(&op);
 //
 //
-//    CreateWindowEx(WS_EX_LAYERED,op.lpszClassName, "Шашнахме квест", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE, 100, 100, 640, 360, NULL, NULL, op.hInstance, NULL);
+//    CreateWindowEx(0,op.lpszClassName, "Шашнахме квест", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE, 100, 100, 640, 360, NULL, NULL, op.hInstance, NULL);
 //    MSG msg;
 //    while (GetMessage(&msg, NULL, 0, 0)) {
 //        TranslateMessage(&msg);

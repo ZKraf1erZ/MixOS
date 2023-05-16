@@ -27,12 +27,12 @@
 //HWND MENUMENUMENU2;
 //HWND MENUMENUMENU3;
 //HSTREAM YOUTUBER;
-//HWND eMp3;
-//int skins;
-//HANDLE bmpwall;
-//HANDLE bmpwall1;
-//HWND hwall;
-//TCHAR StrT[MAX_PATH];
+////HWND eMp3;
+////int skins;
+////HANDLE bmpwall;
+////HANDLE bmpwall1;
+////HWND hwall;
+////TCHAR StrT[MAX_PATH];
 //static COLORREF acrCustClr[16];
 //#pragma comment(linker,"/manifestdependency:\"type='win32' \
 //                        name='Microsoft.Windows.Common-Controls' \
@@ -50,17 +50,26 @@
 //HINSTANCE hInst;
 //HICON progicon;
 //
-//const TCHAR progname[] = "Загрузчик видео с ютуба ver 1.11";
+//const TCHAR progname[] = "Загрузчик видео с ютуба ver 1.11 SP1";
 //
 ////теперь нет звука =)
 //static DWORD rgbCurrent = RGB(76,0,153);
+//DWORD rgbTextColor = RGB(255, 255, 255);
+//
+//bool bIsWallpaperSet;
+//HBITMAP hWallpaperBitmap;
+//BITMAP bm;
+//HDC hCompatibleDC;
+//RECT rcClient;
+//
+//NOTIFYICONDATA nid;
 //
 //static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 //    switch (uMsg) {
 //
 //    case WM_CREATE: {
 //
-//        eMp3 = CreateWindow(TEXT("Edit"), NULL, WS_EX_CLIENTEDGE | WS_BORDER | WS_CHILD, 120, 50, 1000 + 30, 20, hWnd, (HMENU)SKINSSTRO, NULL, 0);
+//        //eMp3 = CreateWindow(TEXT("Edit"), NULL, WS_EX_CLIENTEDGE | WS_BORDER | WS_CHILD, 120, 50, 1000 + 30, 20, hWnd, (HMENU)SKINSSTRO, NULL, 0);
 //        int a = 140;
 //
 //        HMENU hMenubar = CreateMenu();
@@ -69,8 +78,8 @@
 //        HMENU hColorYT = CreateMenu();
 //
 //
-//        NOTIFYICONDATA data;
-//        ZeroMemory(&data, sizeof(NOTIFYICONDATA));
+//        
+//        ZeroMemory(&nid, sizeof(NOTIFYICONDATA));
 //
 //
 //
@@ -78,18 +87,18 @@
 //        SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
 // 
 //
-//        data.cbSize = sizeof(data);
-//        data.hWnd = hWnd;
-//        data.uID = 1;          // Можно поставить любой идентификатор, всё равно иконка только одна
-//        data.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
-//        data.uCallbackMessage = WM_USER_SHELLICON;
-//        data.hIcon = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\Youtube.ico", IMAGE_ICON, 48, 48, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
-//        data.uVersion = NOTIFYICON_VERSION;
+//        nid.cbSize = sizeof(nid);
+//        nid.hWnd = hWnd;
+//        nid.uID = 1;          // Можно поставить любой идентификатор, всё равно иконка только одна
+//        nid.uFlags = NIF_MESSAGE | NIF_ICON | NIF_TIP;
+//        nid.uCallbackMessage = WM_USER_SHELLICON;
+//        nid.hIcon = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\Youtube.ico", IMAGE_ICON, 48, 48, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
+//        nid.uVersion = NOTIFYICON_VERSION;
 //        
 //   /*     strcpy(data.szInfoTitle, "Загрузчик видео с Youtube");*/
-//        strcpy(data.szTip, "Загрузчик видео с Youtube");
+//        strcpy(nid.szTip, "Загрузчик видео с Youtube");
 //
-//        Shell_NotifyIcon(NIM_ADD, &data);
+//        Shell_NotifyIcon(NIM_ADD, &nid);
 //
 //        AppendMenu(hMenubar, MF_POPUP, (UINT_PTR)hAbout, "Справка");
 //        AppendMenu(hMenubar, MF_POPUP, (UINT_PTR)hColorYT, "Сменить цвет");
@@ -107,10 +116,16 @@
 //
 //        AppendMenu(hAbout, MF_STRING, STRANNIK, "О программе");
 //        AppendMenu(hColorYT, MF_STRING, COLORYT, "Мой цвет");
+//        AppendMenu(hColorYT, MF_STRING, TEXT_COLOR, "Сменить цвет текста");
+//        AppendMenu(hColorYT, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hColorYT, MF_STRING, SETBKG, "Мой скин");
+//        AppendMenu(hColorYT, MF_STRING, CLEARSKIN, "Убрать скин");
 //        AppendMenu(hColorYT, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hColorYT, MF_STRING, polupon, "Включить полупрозрачность");
 //        AppendMenu(hColorYT, MF_STRING, polupoff, "Выключить полупрозрачность");
+//        AppendMenu(hColorYT, MF_SEPARATOR, NULL, NULL);
+//        AppendMenu(hColorYT, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
+//        AppendMenu(hColorYT, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
 //
 //
 //
@@ -126,29 +141,60 @@
 //        // воспроизведение было в начале     Вот но что.... Понятно. Ну теперь все нормально работает.
 //        // а когда релиз будет???  Кхм а теперь баг вернулся Типа звук включается по нажатию на первую кнопку. Но это щас исправить можно удалением одной строчки. Щас
 //
+//        GetClientRect(hWnd, &rcClient);
+//
 //        break;
 //    }
 //    case WM_COMMAND:
 //            //теперь смена цвета не работает, а звук дублируется....
 //    {
 //
+//        if (LOWORD(wParam) == CLEARSKIN) {
+//            if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }
+//            if (bIsWallpaperSet == true) bIsWallpaperSet = false;
+//            RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//        }
 //
+//        if (LOWORD(wParam) == MAKE_TOP_MOST_WINDOW)
+//            SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
 //
+//        if (LOWORD(wParam) == MAKE_TOP_WINDOW)
+//            SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
 //
+//        if (LOWORD(wParam) == TEXT_COLOR) {
+//            CHOOSECOLOR cc;
+//            static COLORREF acrCustClr[16]; // массив доп. цветов
 //
+//            ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+//            cc.lStructSize = sizeof(CHOOSECOLOR);
+//            cc.hwndOwner = hWnd;
+//            cc.lpCustColors = (LPDWORD)acrCustClr;
+//            cc.rgbResult = rgbTextColor;
+//            cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 //
+//            if (ChooseColor(&cc) == TRUE) {
+//                //hBrush = CreateSolidBrush(cc.rgbResult);
+//                rgbTextColor = cc.rgbResult;
+//                //InvalidateRect(hWnd, NULL, FALSE);
+//                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//            }
+//        }
 //
 //
 //
 //        if (LOWORD(wParam) == polupon)
 //        {
-//
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_LAYERED);
 //            SetLayeredWindowAttributes(hWnd, NULL, 230, LWA_ALPHA);
 //        }
 //        if (LOWORD(wParam) == polupoff)
 //        {
 //
 //            SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
 //        }
 //
 //
@@ -166,11 +212,12 @@
 //            int a = 140;   //Вот, теперь больше багов тут нет. теперь смотри. Надо добавить микшер громкости во все подпрограммы, где используется звук. =) Это Youtube.cpp Emulate.cpp, quest.cpp.  Но квест потом надо еще будет допиливать. Когда допилим, то думаю, что это можно уже как апдейт выпустить.
 //            // а меня в авторы добавишь???    //Я ж сказал, что добавлю, пока что как помощника, ибо всё равно тут пока больше моего кода, но если ты сделаешь отдельную подпрограммку, какую-нибудь, то считай сразу будешь разработчиком этой программы =).
 //            //ок
-//            MENUMENUMENU = CreateWindow(TEXT("EDIT"), TEXT("Ссылка на ролик на Youtube"), WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL | ES_AUTOVSCROLL | ES_MULTILINE, 10, 500, 605, 70, hWnd, (HMENU)WRITING, NULL, 0);
+//            MENUMENUMENU = CreateWindow(TEXT("EDIT"), NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | ES_AUTOHSCROLL | ES_AUTOVSCROLL /*| ES_MULTILINE*/, 10, 500, 605, 70, hWnd, (HMENU)WRITING, NULL, 0);
+//            SendMessage(MENUMENUMENU, EM_SETCUEBANNER, FALSE, (LPARAM)L"Ссылка на ролик на Youtube");
 //            CreateWindow(TEXT("BUTTON"), TEXT("Скачать"), WS_VISIBLE | WS_CHILD, 120 + a, 360, 100, 25, hWnd, (HMENU)MAKEMAKE, NULL, NULL);
 //            ShowWindow(GetDlgItem(hWnd, MENUMAKER), SW_HIDE);
 //            CreateWindow(TEXT("STATIC"), TEXT("                 Чтобы скачать ролик надо : \n\n1) Вставить ссылку на ролик в поле для ввода.\n2) Нажать кнопку << Скачать >> .\n\nP.S Радоваться, что вы не шашнахме = )\n\nP.S.S Беречь свои тонкие кости = ) "), WS_VISIBLE | WS_CHILD, 150, 90, 325, 140, hWnd, (HMENU)text1, NULL, NULL);
-//
+//            //CreateWindow(TEXT("STATIC"), TEXT("\tЧтобы скачать ролик надо : \n\n1) Вставить ссылку на ролик в поле для ввода.\n2) Нажать кнопку << Скачать >> .\n\nP.S Радоваться, что вы не шашнахме = )\n\nP.S.S Беречь свои тонкие кости = ) "), WS_VISIBLE | WS_CHILD, 150, 90, 325, 140, hWnd, (HMENU)text1, NULL, NULL);
 //            hTrack = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND | WS_VISIBLE, 150, 250, 320, 30, hWnd, (HMENU)LENMUSIC, NULL, NULL);
 //            CreateWindow(TEXT("STATIC"), TEXT("Громкость"), WS_VISIBLE | WS_CHILD, 130 + a, 290, 70, 18, hWnd, (HMENU)text1, NULL, NULL);
 //                                            //PERFECT
@@ -209,7 +256,7 @@
 //
 //            if (GetOpenFileName(&ofnn) == TRUE)
 //            {
-//                SetWindowText(eMp3, str1);
+//                /*SetWindowText(eMp3, str1);
 //
 //                DestroyWindow(hwall);
 //                DestroyWindow(GetDlgItem(hWnd, INSTBKG));
@@ -228,7 +275,20 @@
 //                    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
+//                }*/
+//
+//                if (hWallpaperBitmap != NULL) {
+//                    DeleteObject(hWallpaperBitmap);
+//                    //hWallpaperBitmap = NULL;
 //                }
+//
+//                hWallpaperBitmap = (HBITMAP)LoadImage(NULL, str1, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                if (hWallpaperBitmap != NULL) {
+//                    GetObject(hWallpaperBitmap, sizeof(bm), &bm);
+//                    if (bIsWallpaperSet == false) bIsWallpaperSet = true;
+//                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//                }
+//
 //                /*CreateWindow(TEXT("BUTTON"), TEXT("Установить"), WS_VISIBLE | WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)INSTBKG, NULL, NULL);*/
 //            }
 //            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_HIDE);
@@ -249,6 +309,7 @@
 //
 //            Proga.open("MusicPlayer\\Youtube\\bat.bat");
 //            Proga << "MusicPlayer\\Youtube\\yt-dlp.exe —format mp4 " << videos << endl;
+//            //Proga << "MusicPlayer\\Youtube\\yt-dlp.exe -format mp4 " << videos << endl;
 //            Proga << "echo Your video has been downloaded, and stay in MusicPlayer's directory" << endl;
 //            Proga.close();
 //            system("MusicPlayer\\Youtube\\bat.bat");
@@ -270,8 +331,12 @@
 //                    cc.Flags = CC_FULLOPEN | CC_RGBINIT;
 //
 //                    if (ChooseColor(&cc) == TRUE) {
-//                        bmpwall1 = LoadImage(NULL, "MusicPlayer\\BMP\\MIXSKIN\\clear.png", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
-//                        SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
+//                        if (hWallpaperBitmap != NULL) {
+//                            DeleteObject(hWallpaperBitmap);
+//                            hWallpaperBitmap = NULL;
+//                        }
+//
+//                        if (bIsWallpaperSet == true) bIsWallpaperSet = false;
 //
 //                        hBrush = CreateSolidBrush(cc.rgbResult);
 //                        rgbCurrent = cc.rgbResult;
@@ -304,7 +369,20 @@
 //
 //        case WM_PAINT: {
 //            hdc = BeginPaint(hWnd, &ps);
-//            FillRect(hdc, &ps.rcPaint, hBrush);
+//            
+//            if (bIsWallpaperSet == true) {
+//                hCompatibleDC = CreateCompatibleDC(hdc);
+//
+//                SelectObject(hCompatibleDC, hWallpaperBitmap);
+//                SetStretchBltMode(hdc, HALFTONE);
+//                SetBrushOrgEx(hdc, 0, 0, NULL);
+//                StretchBlt(hdc, 0, 0, rcClient.right, rcClient.bottom, hCompatibleDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+//
+//                DeleteDC(hCompatibleDC);
+//            } else {
+//                FillRect(hdc, &ps.rcPaint, hBrush);
+//            }
+//
 //            EndPaint(hWnd, &ps);
 //        } break;
 //
@@ -317,7 +395,7 @@
 //                    {
 //                        HDC hdcStatic = (HDC)wParam;
 //                        // or obtain the static handle in some other way
-//                        SetTextColor(hdcStatic, RGB(255, 255, 255)); // text color
+//                        SetTextColor(hdcStatic, rgbTextColor); // text color
 //
 //                        SetBkColor(hdcStatic, rgbCurrent);
 //
@@ -332,8 +410,11 @@
 //
 //
 //    case WM_DESTROY: {
+//        BASS_Free();
+//        if (bIsWallpaperSet == true) DeleteObject(hWallpaperBitmap);
+//        DeleteObject(hBrush);
+//        Shell_NotifyIcon(NIM_DELETE, &nid);
 //        PostQuitMessage(0);
-//        return 0;
 //
 //        break;
 //
@@ -348,8 +429,8 @@
 //}  
 //int WINAPI main()
 //{        
-// 
-//    SetProcessDPIAware();
+//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
+//    //SetProcessDPIAware();
 //    WNDCLASS op;     
 //    ZeroMemory(&op, sizeof(WNDCLASS));  
 //    op.lpfnWndProc = wnd_proc;  

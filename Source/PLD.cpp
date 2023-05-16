@@ -46,6 +46,7 @@
 //static COLORREF acrCustClr[16];
 //HBRUSH hBrush = CreateSolidBrush(RGB(0, 100, 204));
 //static DWORD rgbCurrent = RGB(0, 100, 204);
+//DWORD rgbTextColor = RGB(255, 255, 255);
 //HWND hTrack;
 //HDC hdc;
 //PAINTSTRUCT ps;
@@ -168,9 +169,17 @@
 //        AppendMenu(hAbout, MF_STRING, STRANNIK, "О программе");
 //
 //        AppendMenu(hOptions, MF_STRING, MYCOLOR, "Сменить цвет");
-//        AppendMenu(hOptions, MF_SEPARATOR, 0, NULL);
+//        AppendMenu(hOptions, MF_STRING, TEXT_COLOR, "Сменить цвет текста");
+//        AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hOptions, MF_STRING, PLAY, "Включить музыку");
 //        AppendMenu(hOptions, MF_STRING, PAUSE1, "Выключить музыку");
+//        AppendMenu(hOptions, MF_SEPARATOR, 0, NULL);
+//        AppendMenu(hOptions, MF_STRING, polupon, "Включить полупрозрачность");
+//        AppendMenu(hOptions, MF_STRING, polupoff, "Выключить полупрозрачность");
+//        AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
+//        AppendMenu(hOptions, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
+//        AppendMenu(hOptions, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
+//        
 //
 //       
 //
@@ -216,7 +225,7 @@
 //        hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\Win8.ico", IMAGE_ICON, 16, 16, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
 //        SendMessage(GetDlgItem(hWnd, PLUGSUBS), BM_SETIMAGE, IMAGE_ICON, (LPARAM)hIconAll);
 //
-//        CreateWindow(TEXT("STATIC"), TEXT("Прогресс:"), WS_VISIBLE | WS_CHILD, 170, 225, 70, 20, hWnd, (HMENU)PLD_PROGRESS_TEXT, NULL, NULL);
+//        CreateWindow(TEXT("STATIC"), TEXT("Прогресс:"), WS_VISIBLE | WS_CHILD, 170, 225, 70, 20, hWnd, (HMENU)text1 /*PLD_PROGRESS_TEXT*/, NULL, NULL);
 //        hwndProgressBar = CreateWindowEx(NULL, PROGRESS_CLASS, NULL, WS_VISIBLE | WS_CHILD, 170, 245, 370, 25, hWnd, NULL, NULL, NULL);
 //
 //        //hWhitePen = (HPEN)GetStockObject(WHITE_PEN);
@@ -366,6 +375,40 @@
 //            BASS_Start();
 //        }
 //
+//        else if (LOWORD(wParam) == polupon) {
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_LAYERED);
+//            SetLayeredWindowAttributes(hWnd, NULL, 220, LWA_ALPHA);
+//        }
+//        else if (LOWORD(wParam) == polupoff) {
+//            SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+//            SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
+//        }
+//
+//        else if (LOWORD(wParam) == MAKE_TOP_MOST_WINDOW)
+//            SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+//
+//        else if (LOWORD(wParam) == MAKE_TOP_WINDOW)
+//            SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
+//
+//        else if (LOWORD(wParam) == TEXT_COLOR) {
+//            CHOOSECOLOR cc;
+//            static COLORREF acrCustClr[16]; // массив доп. цветов
+//
+//            ZeroMemory(&cc, sizeof(CHOOSECOLOR));
+//            cc.lStructSize = sizeof(CHOOSECOLOR);
+//            cc.hwndOwner = hWnd;
+//            cc.lpCustColors = (LPDWORD)acrCustClr;
+//            cc.rgbResult = rgbTextColor;
+//            cc.Flags = CC_FULLOPEN | CC_RGBINIT;
+//
+//            if (ChooseColor(&cc) == TRUE) {
+//                //hBrush = CreateSolidBrush(cc.rgbResult);
+//                rgbTextColor = cc.rgbResult;
+//                //InvalidateRect(hWnd, NULL, FALSE);
+//                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//            }
+//        }
+//
 //    case WM_HSCROLL:
 //    {
 //        if (hTrack == (HWND)lParam)
@@ -381,24 +424,24 @@
 //        {
 //            HDC hdcStatic = (HDC)wParam;
 //            // or obtain the static handle in some other way
-//            SetTextColor(hdcStatic, RGB(255, 255, 255)); // text color
+//            SetTextColor(hdcStatic, rgbTextColor); // text color
 //
 //            SetBkColor(hdcStatic, rgbCurrent);
 //
 //            return (LRESULT)GetStockObject(NULL_BRUSH);
 //
 //        }
-//        else if (GetDlgCtrlID((HWND)lParam) == PLD_PROGRESS_TEXT)
-//        {
-//            HDC hdcStatic = (HDC)wParam;
-//            // or obtain the static handle in some other way
-//            SetTextColor(hdcStatic, RGB(255, 255, 255)); // text color
+//        //else if (GetDlgCtrlID((HWND)lParam) == PLD_PROGRESS_TEXT)
+//        //{
+//        //    HDC hdcStatic = (HDC)wParam;
+//        //    // or obtain the static handle in some other way
+//        //    SetTextColor(hdcStatic, rgbTextColor); // text color
 //
-//            SetBkColor(hdcStatic, rgbCurrent);
+//        //    SetBkColor(hdcStatic, rgbCurrent);
 //
-//            return (LRESULT)GetStockObject(NULL_BRUSH);
+//        //    return (LRESULT)GetStockObject(NULL_BRUSH);
 //
-//        }
+//        //}
 //        else if (GetDlgCtrlID((HWND)lParam) == LENMUSIC)
 //        {
 //            HDC hdcStatic = (HDC)wParam;
@@ -450,6 +493,8 @@
 //
 //    case WM_DESTROY: {
 //        //DeleteObject(hWhitePen);
+//        BASS_Free();
+//        DeleteObject(hBrush);
 //        Shell_NotifyIcon(NIM_DELETE, &nid);
 //        PostQuitMessage(0);
 //        //return 0;
@@ -468,6 +513,7 @@
 //
 //int WINAPI main()
 //{
+//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
 //    //CoInitialize(NULL);
 //
 //    //SetProcessDPIAware();

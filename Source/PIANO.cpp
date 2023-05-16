@@ -75,10 +75,10 @@
 //
 //HWND eMp3;
 //
-//HWND hwall;
-//
-//HANDLE bmpwall;
-//HANDLE bmpwall1;
+////HWND hwall;
+////
+////HANDLE bmpwall;
+////HANDLE bmpwall1;
 //
 //char str1[MAX_PATH];
 //HINSTANCE hInst;
@@ -104,6 +104,7 @@
 //int c = 390;
 //int d = 80;
 //
+//bool bPCSpeaker;
 //
 ////DWORD playMIDIFile(HWND hWndNotify, LPCWSTR lpszMIDIFileName)
 ////{
@@ -155,7 +156,11 @@
 //
 //
 //
-//
+//bool bIsWallpaperSet;
+//HBITMAP hWallpaperBitmap;
+//BITMAP bm;
+//HDC hCompatibleDC;
+//RECT rcClient;
 //
 //
 //NOTIFYICONDATA nid;
@@ -394,15 +399,20 @@
 //        AppendMenu(hAbout, MF_STRING, STRANNIK, "О программе");
 //        AppendMenu(hColor, MF_STRING, MYCOLOR, "Мой цвет");
 //        AppendMenu(hColor, MF_STRING, SKINEMU, "Мой фон");
+//        AppendMenu(hColor, MF_STRING, CLEARSKIN, "Убрать фон");
 //        AppendMenu(hColor, MF_SEPARATOR, NULL, NULL);
 //        AppendMenu(hColor, MF_STRING, polupon, "Включить полупрозрачность");
 //        AppendMenu(hColor, MF_STRING, polupoff, "Выключить полупрозрачность");
+//        AppendMenu(hColor, MF_SEPARATOR, NULL, NULL);
+//        AppendMenu(hColor, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
+//        AppendMenu(hColor, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
+//
 //
 //
 //        SetMenu(hWnd, hMenubar);
 //
 //
-//
+//        GetClientRect(hWnd, &rcClient);
 //
 //    
 //        break;
@@ -410,17 +420,22 @@
 //    case WM_COMMAND: 
 //    {
 //
+//        if (LOWORD(wParam) == MAKE_TOP_MOST_WINDOW)
+//            SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
 //
+//        if (LOWORD(wParam) == MAKE_TOP_WINDOW)
+//            SetWindowPos(hWnd, HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOREDRAW | SWP_NOSENDCHANGING);
 //
 //        if (LOWORD(wParam) == polupon)
 //        {
-//
+//				SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_LAYERED);
 //            SetLayeredWindowAttributes(hWnd, NULL, 230, LWA_ALPHA);
 //        }
 //        if (LOWORD(wParam) == polupoff)
 //        {
-//
+//				
 //            SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
+//				SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
 //        }
 //
 //
@@ -443,12 +458,21 @@
 //
 //            if (ChooseColor(&cc) == TRUE) {
 //
-//                DestroyWindow(hwall);
+//                //DestroyWindow(hwall);
+//                if (hWallpaperBitmap != NULL) {
+//                    DeleteObject(hWallpaperBitmap);
+//                    hWallpaperBitmap = NULL;
+//                }
+//
+//                if (bIsWallpaperSet == true) bIsWallpaperSet = false;
+//                
+//
 //                hBrush = CreateSolidBrush(cc.rgbResult);
 //                rgbCurrent = cc.rgbResult;
-//
+//                //InvalidateRect(hWnd, NULL, FALSE);
+//                RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 //            }
-//            InvalidateRect(hWnd, NULL, FALSE);
+//            
 //
 //            // ТО АХРИНЕТЬ ОХУЕТЬ ТОЧНЕЕ. Теперь надо такое же добавить в Терминал... И в Пианино... И еще много куда...
 //        }
@@ -1260,7 +1284,7 @@
 //            ShowWindow(GetDlgItem(hWnd, PC_SPEAKER), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, NORMALAUDIO), SW_SHOW);
 //
-//
+//            bPCSpeaker = true;
 //
 //            
 //
@@ -1349,9 +1373,9 @@
 //
 //            if (GetOpenFileName(&ofnn) == TRUE)
 //            {
-//                SetWindowText(eMp3, str1);
+//                //SetWindowText(eMp3, str1);
 //
-//                DestroyWindow(hwall);
+//                /*DestroyWindow(hwall);
 //
 //
 //                skins = GetWindowText(eMp3, StrT, MAX_PATH);
@@ -1365,12 +1389,34 @@
 //                    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall1);
 //                    SendMessage(hwall, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpwall);
 //
+//                }*/
+//
+//                if (hWallpaperBitmap != NULL) {
+//                    DeleteObject(hWallpaperBitmap);
+//                    //hWallpaperBitmap = NULL;
 //                }
+//
+//                hWallpaperBitmap = (HBITMAP)LoadImage(NULL, str1, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT | LR_DEFAULTSIZE);
+//                if (hWallpaperBitmap != NULL) {
+//                    GetObject(hWallpaperBitmap, sizeof(bm), &bm);
+//                    if (bIsWallpaperSet == false) bIsWallpaperSet = true;
+//                    RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+//                }
+//
 //                /*CreateWindow(TEXT("BUTTON"), TEXT("Установить"), WS_VISIBLE | WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)INSTBKG, NULL, NULL);*/
 //            }
 //
 //
 //
+//        }
+//
+//        if (LOWORD(wParam) == CLEARSKIN) {
+//            if (hWallpaperBitmap != NULL) {
+//                DeleteObject(hWallpaperBitmap);
+//                hWallpaperBitmap = NULL;
+//            }
+//            if (bIsWallpaperSet == true) bIsWallpaperSet = false;
+//            RedrawWindow(hWnd, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
 //        }
 // 
 //        if (LOWORD(wParam) == NORMALAUDIO)
@@ -1467,7 +1513,7 @@
 //            ShowWindow(GetDlgItem(hWnd, PC_SPEAKER), SW_SHOW);
 //
 //
-//
+//            bPCSpeaker = false;
 //
 //        }
 //
@@ -1801,134 +1847,266 @@
 //
 //                   case WM_CHAR:
 //                   {
-//                       switch (wParam)   //Теперь работать стало, когда я сделал Wparam
-//                       {
-//                       case 'я':
+//                       if (bPCSpeaker == false) {
+//                           switch (wParam)   //Теперь работать стало, когда я сделал Wparam
+//                           {
+//                               case 'я':
 //
-//                       SendMessage(hWnd, WM_COMMAND, PCDO0, 0);
-//                       break;
-//                       
-//                       case 'z':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO0, 0);
+//                                   break;
 //
-//                           
-//                               SendMessage(hWnd, WM_COMMAND, DO0, 0);
-//                               break;
+//                               case 'z':
 //
 //
-//                           //Ладно, обойдемся без русского языка, ок? Ок
-//                       case 's':
-//                           SendMessage(hWnd, WM_COMMAND, DO01, 0);
-//                           break;
-//                       case 'x':
-//                           SendMessage(hWnd, WM_COMMAND, RE0, 0);
-//                           break;
-//                       case 'd':
-//                           SendMessage(hWnd, WM_COMMAND, RE01, 0);
-//                           break;
-//                       case 'c':
-//                           SendMessage(hWnd, WM_COMMAND, MI0, 0);
-//                           break;
-//                       case 'v':
-//                           SendMessage(hWnd, WM_COMMAND, FA0, 0);
-//                           break;
-//                       case 'g':
-//                           SendMessage(hWnd, WM_COMMAND, FA01, 0);
-//                           break;
-//                       case 'b':
-//                           SendMessage(hWnd, WM_COMMAND, SOL0, 0);
-//                           break;
-//                       case 'h':
-//                           SendMessage(hWnd, WM_COMMAND, SOL01, 0);
-//                           break;
-//                       case 'n':
-//                           SendMessage(hWnd, WM_COMMAND, LA0, 0);
-//                           break;
-//                       case 'j':
-//                           SendMessage(hWnd, WM_COMMAND, LA01, 0);
-//                           break;
-//                       case 'm':
-//                           SendMessage(hWnd, WM_COMMAND, SI0, 0);
-//                           break;
-//                       case ',':
-//                           SendMessage(hWnd, WM_COMMAND, DO, 0);
-//                           break;
-//                       case '.':
-//                           SendMessage(hWnd, WM_COMMAND, RE, 0);
-//                           break;
-//                       case '/':
-//                           SendMessage(hWnd, WM_COMMAND, MI, 0);
-//                           break;
-//                       case ';':
-//                           SendMessage(hWnd, WM_COMMAND, RE1, 0);
-//                           break;
-//                       case 'l':
-//                           SendMessage(hWnd, WM_COMMAND, DO1, 0);
-//                           break;
-//                       case 'q':
+//                                   SendMessage(hWnd, WM_COMMAND, DO0, 0);
+//                                   break;
 //
-//                           SendMessage(hWnd, WM_COMMAND, DO, 0);
-//                           break;
-//                       case 'w':
 //
-//                           SendMessage(hWnd, WM_COMMAND, RE, 0);
-//                           break;
-//                       case 'e':
-//                           SendMessage(hWnd, WM_COMMAND, MI, 0);
-//                           break;
-//                       case 'r':
-//                           SendMessage(hWnd, WM_COMMAND, FA, 0);
-//                           break;
-//                       case 't':
-//                           SendMessage(hWnd, WM_COMMAND, SOL, 0);
-//                           break;
-//                       case 'y':
-//                           SendMessage(hWnd, WM_COMMAND, LA, 0);
-//                           break;
-//                       case 'u':
-//                           SendMessage(hWnd, WM_COMMAND, SI, 0);
-//                           break;
-//                       case 'i':
-//                           SendMessage(hWnd, WM_COMMAND, DO2, 0);
-//                           break;
-//                       case 'o':
-//                           SendMessage(hWnd, WM_COMMAND, RE2, 0);
-//                           break;
-//                       case 'p':
-//                           SendMessage(hWnd, WM_COMMAND, MI2, 0);
-//                           break;
-//                       case '[':
-//                           SendMessage(hWnd, WM_COMMAND, FA2, 0);
-//                           break;
-//                       case ']':
-//                           SendMessage(hWnd, WM_COMMAND, SOL2, 0);
-//                           break;
-//                       case '2':
-//                           SendMessage(hWnd, WM_COMMAND, DO1, 0);
-//                           break;
-//                       case '3':
-//                           SendMessage(hWnd, WM_COMMAND, RE1, 0);
-//                           break;
-//                       case '5':
-//                           SendMessage(hWnd, WM_COMMAND, FA1, 0);
-//                           break;
-//                       case '6':
-//                           SendMessage(hWnd, WM_COMMAND, SOL1, 0);
-//                           break;
-//                       case '7':
-//                           SendMessage(hWnd, WM_COMMAND, LA1, 0);
-//                           break;
-//                       case '9':
-//                           SendMessage(hWnd, WM_COMMAND, DO2D, 0);
-//                           break;
-//                       case '0':
-//                           SendMessage(hWnd, WM_COMMAND, RE2D, 0);
-//                           break;
-//                       case '=':
-//                           SendMessage(hWnd, WM_COMMAND, FA2D, 0);
-//                           break;
-//                       case 'a':
-//                           SendMessage(hWnd, WM_COMMAND, SOL2D, 0);
-//                           break;
+//                                   //Ладно, обойдемся без русского языка, ок? Ок
+//                               case 's':
+//                                   SendMessage(hWnd, WM_COMMAND, DO01, 0);
+//                                   break;
+//                               case 'x':
+//                                   SendMessage(hWnd, WM_COMMAND, RE0, 0);
+//                                   break;
+//                               case 'd':
+//                                   SendMessage(hWnd, WM_COMMAND, RE01, 0);
+//                                   break;
+//                               case 'c':
+//                                   SendMessage(hWnd, WM_COMMAND, MI0, 0);
+//                                   break;
+//                               case 'v':
+//                                   SendMessage(hWnd, WM_COMMAND, FA0, 0);
+//                                   break;
+//                               case 'g':
+//                                   SendMessage(hWnd, WM_COMMAND, FA01, 0);
+//                                   break;
+//                               case 'b':
+//                                   SendMessage(hWnd, WM_COMMAND, SOL0, 0);
+//                                   break;
+//                               case 'h':
+//                                   SendMessage(hWnd, WM_COMMAND, SOL01, 0);
+//                                   break;
+//                               case 'n':
+//                                   SendMessage(hWnd, WM_COMMAND, LA0, 0);
+//                                   break;
+//                               case 'j':
+//                                   SendMessage(hWnd, WM_COMMAND, LA01, 0);
+//                                   break;
+//                               case 'm':
+//                                   SendMessage(hWnd, WM_COMMAND, SI0, 0);
+//                                   break;
+//                               case ',':
+//                                   SendMessage(hWnd, WM_COMMAND, DO, 0);
+//                                   break;
+//                               case '.':
+//                                   SendMessage(hWnd, WM_COMMAND, RE, 0);
+//                                   break;
+//                               case '/':
+//                                   SendMessage(hWnd, WM_COMMAND, MI, 0);
+//                                   break;
+//                               case ';':
+//                                   SendMessage(hWnd, WM_COMMAND, RE1, 0);
+//                                   break;
+//                               case 'l':
+//                                   SendMessage(hWnd, WM_COMMAND, DO1, 0);
+//                                   break;
+//                               case 'q':
+//
+//                                   SendMessage(hWnd, WM_COMMAND, DO, 0);
+//                                   break;
+//                               case 'w':
+//
+//                                   SendMessage(hWnd, WM_COMMAND, RE, 0);
+//                                   break;
+//                               case 'e':
+//                                   SendMessage(hWnd, WM_COMMAND, MI, 0);
+//                                   break;
+//                               case 'r':
+//                                   SendMessage(hWnd, WM_COMMAND, FA, 0);
+//                                   break;
+//                               case 't':
+//                                   SendMessage(hWnd, WM_COMMAND, SOL, 0);
+//                                   break;
+//                               case 'y':
+//                                   SendMessage(hWnd, WM_COMMAND, LA, 0);
+//                                   break;
+//                               case 'u':
+//                                   SendMessage(hWnd, WM_COMMAND, SI, 0);
+//                                   break;
+//                               case 'i':
+//                                   SendMessage(hWnd, WM_COMMAND, DO2, 0);
+//                                   break;
+//                               case 'o':
+//                                   SendMessage(hWnd, WM_COMMAND, RE2, 0);
+//                                   break;
+//                               case 'p':
+//                                   SendMessage(hWnd, WM_COMMAND, MI2, 0);
+//                                   break;
+//                               case '[':
+//                                   SendMessage(hWnd, WM_COMMAND, FA2, 0);
+//                                   break;
+//                               case ']':
+//                                   SendMessage(hWnd, WM_COMMAND, SOL2, 0);
+//                                   break;
+//                               case '2':
+//                                   SendMessage(hWnd, WM_COMMAND, DO1, 0);
+//                                   break;
+//                               case '3':
+//                                   SendMessage(hWnd, WM_COMMAND, RE1, 0);
+//                                   break;
+//                               case '5':
+//                                   SendMessage(hWnd, WM_COMMAND, FA1, 0);
+//                                   break;
+//                               case '6':
+//                                   SendMessage(hWnd, WM_COMMAND, SOL1, 0);
+//                                   break;
+//                               case '7':
+//                                   SendMessage(hWnd, WM_COMMAND, LA1, 0);
+//                                   break;
+//                               case '9':
+//                                   SendMessage(hWnd, WM_COMMAND, DO2D, 0);
+//                                   break;
+//                               case '0':
+//                                   SendMessage(hWnd, WM_COMMAND, RE2D, 0);
+//                                   break;
+//                               case '=':
+//                                   SendMessage(hWnd, WM_COMMAND, FA2D, 0);
+//                                   break;
+//                               case 'a':
+//                                   SendMessage(hWnd, WM_COMMAND, SOL2D, 0);
+//                                   break;
+//                           }
+//                       } else {
+//                           switch (wParam)   //Теперь работать стало, когда я сделал Wparam
+//                           {
+//                               case 'я':
+//
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO0, 0);
+//                                   break;
+//
+//                               case 'z':
+//
+//
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO0, 0);
+//                                   break;
+//
+//
+//                                   //Ладно, обойдемся без русского языка, ок? Ок
+//                               case 's':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO01, 0);
+//                                   break;
+//                               case 'x':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE0, 0);
+//                                   break;
+//                               case 'd':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE01, 0);
+//                                   break;
+//                               case 'c':
+//                                   SendMessage(hWnd, WM_COMMAND, PCMI0, 0);
+//                                   break;
+//                               case 'v':
+//                                   SendMessage(hWnd, WM_COMMAND, PCFA0, 0);
+//                                   break;
+//                               case 'g':
+//                                   SendMessage(hWnd, WM_COMMAND, PCFA01, 0);
+//                                   break;
+//                               case 'b':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSOL0, 0);
+//                                   break;
+//                               case 'h':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSOL01, 0);
+//                                   break;
+//                               case 'n':
+//                                   SendMessage(hWnd, WM_COMMAND, PCLA0, 0);
+//                                   break;
+//                               case 'j':
+//                                   SendMessage(hWnd, WM_COMMAND, PCLA01, 0);
+//                                   break;
+//                               case 'm':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSI0, 0);
+//                                   break;
+//                               case ',':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO, 0);
+//                                   break;
+//                               case '.':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE, 0);
+//                                   break;
+//                               case '/':
+//                                   SendMessage(hWnd, WM_COMMAND, PCMI, 0);
+//                                   break;
+//                               case ';':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE1, 0);
+//                                   break;
+//                               case 'l':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO1, 0);
+//                                   break;
+//                               case 'q':
+//
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO, 0);
+//                                   break;
+//                               case 'w':
+//
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE, 0);
+//                                   break;
+//                               case 'e':
+//                                   SendMessage(hWnd, WM_COMMAND, PCMI, 0);
+//                                   break;
+//                               case 'r':
+//                                   SendMessage(hWnd, WM_COMMAND, PCFA, 0);
+//                                   break;
+//                               case 't':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSOL, 0);
+//                                   break;
+//                               case 'y':
+//                                   SendMessage(hWnd, WM_COMMAND, PCLA, 0);
+//                                   break;
+//                               case 'u':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSI, 0);
+//                                   break;
+//                               case 'i':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO2, 0);
+//                                   break;
+//                               case 'o':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE2, 0);
+//                                   break;
+//                               case 'p':
+//                                   SendMessage(hWnd, WM_COMMAND, PCMI2, 0);
+//                                   break;
+//                               case '[':
+//                                   SendMessage(hWnd, WM_COMMAND, PCFA2, 0);
+//                                   break;
+//                               case ']':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSOL2, 0);
+//                                   break;
+//                               case '2':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO1, 0);
+//                                   break;
+//                               case '3':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE1, 0);
+//                                   break;
+//                               case '5':
+//                                   SendMessage(hWnd, WM_COMMAND, PCFA1, 0);
+//                                   break;
+//                               case '6':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSOL1, 0);
+//                                   break;
+//                               case '7':
+//                                   SendMessage(hWnd, WM_COMMAND, PCLA1, 0);
+//                                   break;
+//                               case '9':
+//                                   SendMessage(hWnd, WM_COMMAND, PCDO2D, 0);
+//                                   break;
+//                               case '0':
+//                                   SendMessage(hWnd, WM_COMMAND, PCRE2D, 0);
+//                                   break;
+//                               case '=':
+//                                   SendMessage(hWnd, WM_COMMAND, PCFA2D, 0);
+//                                   break;
+//                               case 'a':
+//                                   SendMessage(hWnd, WM_COMMAND, PCSOL2D, 0);
+//                                   break;
+//                           }
 //                       }
 //                   }
 //
@@ -1993,12 +2171,29 @@
 //
 //    case WM_PAINT: {
 //            hdc = BeginPaint(hWnd, &ps);
-//            FillRect(hdc, &ps.rcPaint, hBrush);
+//            
+//            if (bIsWallpaperSet == true) {
+//                hCompatibleDC = CreateCompatibleDC(hdc);
+//
+//                SelectObject(hCompatibleDC, hWallpaperBitmap);
+//                SetStretchBltMode(hdc, HALFTONE);
+//                SetBrushOrgEx(hdc, 0, 0, NULL);
+//                StretchBlt(hdc, 0, 0, rcClient.right, rcClient.bottom, hCompatibleDC, 0, 0, bm.bmWidth, bm.bmHeight, SRCCOPY);
+//
+//                DeleteDC(hCompatibleDC);
+//            } else {
+//                FillRect(hdc, &ps.rcPaint, hBrush);
+//            }
+//
+//
 //            EndPaint(hWnd, &ps);
 //            return 0;
 //        }
 //
 //    case WM_DESTROY: {
+//        BASS_Free();
+//        if (bIsWallpaperSet == true) DeleteObject(hWallpaperBitmap);
+//        DeleteObject(hBrush);
 //        Shell_NotifyIcon(NIM_DELETE, &nid);
 //        PostQuitMessage(0);
 //        
@@ -2017,6 +2212,7 @@
 //
 //int WINAPI main() 
 //{
+//    SetThreadLocale(MAKELCID(MAKELANGID(LANG_RUSSIAN, SUBLANG_RUSSIAN_RUSSIA), SORT_DEFAULT));
 //    WNDCLASS op;
 //    ZeroMemory(&op, sizeof(WNDCLASS));
 //    op.lpfnWndProc = wnd_proc;
