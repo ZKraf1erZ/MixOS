@@ -1266,6 +1266,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
 
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case LETO:
         {
@@ -1281,6 +1283,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
 
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case SHAG:
         {
@@ -1295,6 +1299,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             BASS_ChannelPlay(stro, false); // проигрывание файла
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
+
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case SLOVO:
         {
@@ -1312,6 +1319,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
 
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case CIGARET:
         {
@@ -1326,6 +1335,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
             
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case PEREMEN:
         {
@@ -1341,6 +1352,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             BASS_ChannelPlay(stro, false); // проигрывание файла
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
+
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case MUSIC_7: {
             BASS_Stop();
@@ -1357,6 +1371,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
 
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case MUSIC_8: {
             BASS_Stop();
@@ -1371,6 +1387,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
 
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case MUSIC_9: {
             BASS_Stop();
@@ -1384,6 +1402,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             BASS_ChannelPlay(stro, false); // проигрывание файла
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
+
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case MUSIC_10: {
             BASS_Stop();
@@ -1400,6 +1421,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
 
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case MUSIC_11: {
             BASS_Stop();
@@ -1414,6 +1437,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             BASS_ChannelPlay(stro, false); // проигрывание файла
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
+
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
         case MUSIC_12: {
             BASS_Stop();
@@ -1426,6 +1452,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             BASS_ChannelPlay(stro, false); // проигрывание файла
             SendMessage(FOR6COMPOSIT1, TBM_SETPOS, 0, 0);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGEMAX, TRUE, BASS_ChannelBytes2Seconds(stro, BASS_ChannelGetLength(stro, BASS_POS_BYTE)));
+
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
         } break;
 
         case STOPS:
@@ -1513,10 +1542,10 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_HIDE);
             ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_SHOW);
 
-            ShowWindow(GetDlgItem(hWnd, LENMUSIC), SW_HIDE);
-            ShowWindow(GetDlgItem(hWnd, VOLUMASTA), SW_HIDE);
-            ShowWindow(hTrack2, SW_HIDE);
-            ShowWindow(GetDlgItem(hWnd, SOUNDMASTA), SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, LENMUSIC), SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, VOLUMASTA), SW_HIDE);
+            //ShowWindow(hTrack2, SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, SOUNDMASTA), SW_HIDE);
             BASS_ChannelStop(stro);
             //пауза
         } break;
@@ -1529,10 +1558,10 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
 
 
-            ShowWindow(GetDlgItem(hWnd, LENMUSIC), SW_SHOW);
-            ShowWindow(GetDlgItem(hWnd, VOLUMASTA), SW_SHOW);
-            ShowWindow(hTrack2, SW_SHOW);
-            ShowWindow(GetDlgItem(hWnd, SOUNDMASTA), SW_SHOW);
+            //ShowWindow(GetDlgItem(hWnd, LENMUSIC), SW_SHOW);
+            //ShowWindow(GetDlgItem(hWnd, VOLUMASTA), SW_SHOW);
+            //ShowWindow(hTrack2, SW_SHOW);
+            //ShowWindow(GetDlgItem(hWnd, SOUNDMASTA), SW_SHOW);
         } break;
         case FILEY2:
         {
@@ -1554,8 +1583,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             ShowWindow(FOR6COMPOSIT1, SW_HIDE);
 
             
-            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_SHOW);
+            ShowWindow(GetDlgItem(hWnd, PAUSE1), /*SW_SHOW*/ SW_HIDE);
             ShowWindow(GetDlgItem(hWnd, PAUSE2), SW_HIDE);
+
 
             ShowWindow(hTrack2, SW_SHOW);
             ShowWindow(GetDlgItem(hWnd, SOUNDMASTA), SW_SHOW);
