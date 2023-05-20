@@ -450,7 +450,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             AppendMenu(hOptions, MF_STRING, MAKE_TOP_MOST_WINDOW, "Поверх остальных окон");
             AppendMenu(hOptions, MF_STRING, MAKE_TOP_WINDOW, "На уровень остальных окон");
             AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
-            AppendMenu(hOptions, /*WS_DISABLED|*/ MF_STRING , LOADDLL, "Загрузить плагины...");
+            AppendMenu(hOptions, /*WS_DISABLED|*/ MF_STRING | MF_DISABLED , LOADDLL, "Загрузить плагины...");
             /*AppendMenu(hOptions, MF_SEPARATOR, NULL, NULL);
             AppendMenu(hOptions, MF_STRING, GET_WINDOWS_VERSION, "Узнать версию Windows");*/
 
@@ -735,6 +735,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_ACCEPTFILES | WS_EX_LAYERED);
             SetLayeredWindowAttributes(hWnd, NULL, 230, LWA_ALPHA);
         } break;
+
         case polupoff:
         {
             ShowWindow(GetDlgItem(hWnd, polupon), SW_SHOW);
@@ -1610,13 +1611,13 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             //SendMessage(hTrack, TBM_SETLINESIZE, NULL, 100);
         } break;
 
-        case LOADDLL:
-        {
-            if (MessageBox(hWnd, "Запустить от имени администратора?", "Загрузить плагины", MB_ICONQUESTION | MB_YESNO) == IDYES)
-                ShellExecute(NULL, "runas", "MusicPlayer\\DWL\\MixDownload.exe", NULL, NULL, SW_SHOWDEFAULT);
-            else
-                system("start MusicPlayer\\DWL\\MixDownload.exe");
-        } break;
+        //case LOADDLL:
+        //{
+        //    /*if (MessageBox(hWnd, "Запустить от имени администратора?", "Загрузить плагины", MB_ICONQUESTION | MB_YESNO) == IDYES)
+        //        ShellExecute(NULL, "runas", "MusicPlayer\\DWL\\MixDownload.exe", NULL, NULL, SW_SHOWDEFAULT);
+        //    else*/
+        //        system("start MusicPlayer\\DWL\\MixDownload.exe");
+        //} break;
 
         case QUEST:
         {

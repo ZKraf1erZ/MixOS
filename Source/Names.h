@@ -212,7 +212,7 @@
 #define MYCOLOR 268
 #define COLORASTA 269
 #define MYFONT 270
-#define SAVEINI 271 // �� �������
+#define SAVEINI 271 // �� ������� // починеный текст: не удалать
 #define COLOREMU 272
 #define COLORYT 273
 #define LENMUSIC 274
