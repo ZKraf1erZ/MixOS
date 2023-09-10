@@ -95,7 +95,7 @@
 //        NotifyIconData.uVersion = NOTIFYICON_VERSION;
 //
 //        /*     strcpy(data.szInfoTitle, "Загрузчик видео с Youtube");*/
-//        strcpy(NotifyIconData.szTip, "Термнал из MixOS");
+//        strcpy(NotifyIconData.szTip, /*"Термнал из MixOS"*/ progname);
 //
 //
 //        Shell_NotifyIcon(NIM_ADD, &NotifyIconData);
@@ -1423,7 +1423,7 @@
 //    RegisterClass(&op);
 //
 //
-//    CreateWindowEx(0, op.lpszClassName, "Терминал StrannikCorp ver 1.2 SP1", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE, 100, 100, 800, 600, NULL, NULL, op.hInstance, NULL);
+//    CreateWindowEx(0, op.lpszClassName, "Терминал StrannikCorp ver 1.2 SP1 Update", WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE, 100, 100, 800, 600, NULL, NULL, op.hInstance, NULL);
 //    MSG msg;
 //    while (GetMessage(&msg, NULL, 0, 0)) {
 //        TranslateMessage(&msg);

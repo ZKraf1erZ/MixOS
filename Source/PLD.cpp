@@ -50,7 +50,7 @@
 //HWND hTrack;
 //HDC hdc;
 //PAINTSTRUCT ps;
-//const TCHAR progname[] = _T("Загрузчик плагинов для MixOS ver. 1.0");
+//const TCHAR progname[] = _T("Загрузчик плагинов для MixOS ver. 1.0 SP1 Update");
 //HWND tardis;
 ////bool key_pressed = false;
 //HINSTANCE hInst;

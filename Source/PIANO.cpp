@@ -21,6 +21,7 @@
 //#include<mmdeviceapi.h>
 //#include "Names.h"
 //#include "bass.h"
+//#include "bassmidi.h"
 //#include "wingdi.h"
 //#include <commdlg.h>
 //#include <fstream>
@@ -164,6 +165,10 @@
 //
 //
 //NOTIFYICONDATA nid;
+//
+//HPLUGIN bassmidi;
+//
+////bool loop;
 //
 //static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 //    switch (uMsg) {
@@ -388,6 +393,13 @@
 //        ShowWindow(GetDlgItem(hWnd, LOOPSTOP3), SW_HIDE);
 //
 //        ShowWindow(GetDlgItem(hWnd, NORMALAUDIO), SW_HIDE);
+//
+//        bassmidi = BASS_PluginLoad("MusicPlayer\\BASSPlugins\\bassmidi.dll", 0); // загрузить плагин
+//        if (bassmidi != NULL) {
+//            //BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BASSPlugins\\WeedsGM3.sf2"); // загрузить soundfont (звуковой шрифт?)
+//            BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BASSPlugins\\ChoriumRevA.SF2");
+//            BASS_PluginEnable(bassmidi, TRUE); // включить плагин
+//        }
 //        BASS_Init(-1, 44100, 0, 0, NULL);
 //
 //        SendMessageW(eMp3, EM_SETCUEBANNER, FALSE, (LPARAM)L"Путь до музыки, например MusicPlayer\\Your\\");
@@ -1117,8 +1129,12 @@
 //            BASS_StreamFree(LOOPBREAK);
 //            ShowWindow(GetDlgItem(hWnd, LOOP1), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, LOOPSTOP), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, LOOPSTOP2), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, LOOP2), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, LOOPSTOP3), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, LOOP3), SW_SHOW);
 //
-//                LOOPBREAK = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Piano\\BreakLoop.mp3", 0, 0, 0);
+//                LOOPBREAK = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Piano\\BreakLoop.mp3", 0, 0, BASS_SAMPLE_LOOP);
 //                BASS_ChannelPlay(LOOPBREAK, false); // проигрывание файла
 //                
 //     
@@ -1130,8 +1146,12 @@
 //            BASS_Start();
 //            ShowWindow(GetDlgItem(hWnd, LOOP2), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, LOOPSTOP2), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, LOOPSTOP), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, LOOP1), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, LOOPSTOP3), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, LOOP3), SW_SHOW);
 //
-//            LOOPBREAK = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Piano\\NinetyLOOP.mp3", 0, 0, 0);
+//            LOOPBREAK = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Piano\\NinetyLOOP.mp3", 0, 0, BASS_SAMPLE_LOOP);
 //            BASS_ChannelPlay(LOOPBREAK, false); // проигрывание файла
 //
 //
@@ -1143,8 +1163,12 @@
 //            BASS_Start();
 //            ShowWindow(GetDlgItem(hWnd, LOOP3), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, LOOPSTOP3), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, LOOPSTOP2), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, LOOP2), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, LOOPSTOP), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, LOOP1), SW_SHOW);
 //
-//            LOOPBREAK = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Piano\\PendalLOOP.mp3", 0, 0, 0);
+//            LOOPBREAK = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Piano\\PendalLOOP.mp3", 0, 0, BASS_SAMPLE_LOOP);
 //            BASS_ChannelPlay(LOOPBREAK, false); // проигрывание файла
 //
 //
@@ -1316,21 +1340,27 @@
 //
 //
 //                SetWindowText(eMp3, str1);
+//                ShowWindow(GetDlgItem(hWnd, PLAY), SW_SHOW);
 //            }
-//            ShowWindow(GetDlgItem(hWnd, PLAY), SW_SHOW);
+//            
 //
 //
 //        }
 //        if (LOWORD(wParam) == PLAY)
 //        {
 //
-//
+//            //DWORD flags;
 //            char midi[MAX_PATH];
 //
 //            GetWindowText(eMp3, midi, MAX_PATH);
 //            ShowWindow(GetDlgItem(hWnd, PLAY), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, STOPS), SW_SHOW);
-//            YOUTUBER = BASS_StreamCreateFile(FALSE, midi, 0, 0, 0);
+//            /*if (loop == true) {
+//                flags = BASS_SAMPLE_LOOP;
+//            } else {
+//                flags = 0;
+//            }*/
+//            YOUTUBER = BASS_StreamCreateFile(FALSE, midi, 0, 0, /*flags*/ 0);
 //            BASS_ChannelPlay(YOUTUBER, false);
 //            /*playMIDIFile(hWnd, (LPCWSTR)midi);*/
 //            //mciSendString(midi, NULL, 0, NULL);
@@ -1342,6 +1372,7 @@
 //            BASS_Start();
 //           
 //            ShowWindow(GetDlgItem(hWnd, STOPS), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, PLAY), SW_SHOW);
 //
 //
 //            /*playMIDIFile(hWnd, (LPCWSTR)midi);*/
@@ -2192,6 +2223,10 @@
 //
 //    case WM_DESTROY: {
 //        BASS_Free();
+//        if (bassmidi != NULL) {
+//            BASS_PluginEnable(bassmidi, FALSE); // отключить плагин
+//            BASS_PluginFree(bassmidi); // выгрузить плагин
+//        }
 //        if (bIsWallpaperSet == true) DeleteObject(hWallpaperBitmap);
 //        DeleteObject(hBrush);
 //        Shell_NotifyIcon(NIM_DELETE, &nid);

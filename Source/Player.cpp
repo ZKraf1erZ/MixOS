@@ -21,6 +21,7 @@
 #include<mmdeviceapi.h>
 #include "Names.h"
 #include "bass.h"
+#include "bassmidi.h"
 #include "wingdi.h"
 #include <commdlg.h>
 #include <fstream>
@@ -42,6 +43,7 @@
 
 #pragma comment(lib, "winmm.lib")
 #pragma comment(lib, "bass")
+//#pragma comment(lib, "bassmidi")
 //#pragma comment(lib, "shlwapi.lib")
 #pragma comment(lib, "comctl32.lib")
 
@@ -90,7 +92,7 @@ TCHAR StrT[MAX_PATH];
 //HANDLE bmpwall1;
 //HWND hwall;
 
-TCHAR progname[] = _T("MixOS Beta 2.4 SP1");
+TCHAR progname[] = _T("MixOS Beta 2.4 SP1 Update");
 HICON progicon;
 HINSTANCE hInst;
 
@@ -109,6 +111,8 @@ HDC hCompatibleDC;
 bool bIsWallpaperSet = false;
 
 RECT rcClient;
+
+HPLUGIN bassmidi;
 
 //bool IsTopMost = false;
 
@@ -144,7 +148,24 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         Shell_NotifyIcon(NIM_ADD, &notifyIconData);
 
         SetBkMode(hdc, OPAQUE);
+
+        /*bassmidi = BASS_PluginLoad("MusicPlayer\\BASSPlugins\\bassmidi.dll", 0);
+        if (bassmidi == NULL) {
+            MessageBox(NULL, "BASSMIDI не загружен. Это означает, что файлы MIDI не будут поддерживатся", "Внимание", MB_ICONWARNING);
+        }
+        BASS_PluginEnable(bassmidi, TRUE);*/
+        bassmidi = BASS_PluginLoad("MusicPlayer\\BASSPlugins\\bassmidi.dll", 0); // загрузить плагин
+        if (bassmidi != NULL) {
+            //BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BASSPlugins\\WeedsGM3.sf2"); // загрузить soundfont (звуковой шрифт?)
+            BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BASSPlugins\\ChoriumRevA.SF2");
+            BASS_PluginEnable(bassmidi, TRUE); // включить плагин
+        }
+        /*if (bassmidi == NULL) {
+            MessageBox(NULL, "BASSMIDI не загружен. Это означает, что файлы MIDI не будут поддерживатся", "Внимание", MB_ICONWARNING);
+        }*/
+        
         BASS_Init(-1, 44100, 0, 0, NULL);
+        
 
         HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
         HICON hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\MixOS.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
@@ -187,8 +208,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
         hTrack1 = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS /*| LVS_EX_TRANSPARENTBKGND*/ | WS_VISIBLE | TBS_ENABLESELRANGE, 10, 20, 100, 20, hWnd, (HMENU)LENMUSIC4, NULL, NULL);
         /*ShowWindow(GetDlgItem(hWnd, LENMUSIC1), SW_SHOW);*/
-        SendMessage(hTrack1, TBM_SETPOS, 0, 1);
-        SendMessage(hTrack1, TBM_SETRANGEMAX, TRUE, 100);
+        SendMessage(hTrack1, TBM_SETPOS, 0, 100);
+        SendMessage(hTrack1, TBM_SETRANGEMAX, TRUE, 200);
         CreateWindow(TEXT("STATIC"), TEXT("Громкость"), WS_VISIBLE | WS_CHILD, 25, 60 - 20, 70, 18, hWnd, (HMENU)text11, NULL, NULL);
 
         /*eMp3 = CreateWindow(TEXT("Edit"), NULL, WS_EX_CLIENTEDGE | WS_BORDER | WS_CHILD|WS_VISIBLE , 120, 50, 1000 + 30, 20, hWnd, (HMENU)SKINSSTRO, NULL, 0);
@@ -240,7 +261,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             
             case ID_BUTTON:
         {
-            SetWindowText(hWnd, "MixPlayer из MixOS Beta 2.4 SP1");
+            SetWindowText(hWnd, "MixPlayer из MixOS Beta 2.4 SP1 Update");
 
             HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
             HICON hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\MixOS.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
@@ -419,6 +440,8 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             AppendMenu(hInstall, MF_STRING, HW, "Открыть HW monitor");
             AppendMenu(hInstall, MF_SEPARATOR, NULL, NULL);
             AppendMenu(hInstall, MF_STRING, BOMB, "Открыть Revo Uninstaller");
+            AppendMenu(hInstall, MF_SEPARATOR, NULL, NULL);
+            AppendMenu(hInstall, MF_STRING, BLUESCREENVIEW, "Открыть BlueScreenView");
 
 
 
@@ -487,10 +510,11 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             ShowWindow(GetDlgItem(hWnd, YOUTUBE), SW_HIDE);
             ShowWindow(GetDlgItem(hWnd, QUEST), SW_HIDE);
 
-            CreateWindow(TEXT("STATIC"), TEXT("MixPlayer Version Beta 2.4. copyright ©StrannikCorp. All rights reserved. Service Pack 1 by Z_Kraf1er_Z"), WS_VISIBLE | WS_CHILD, 400 - 110, 20, 500 + 190, 25, hWnd, (HMENU)text1, NULL, NULL);
+            CreateWindow(TEXT("STATIC"), TEXT("MixPlayer Version Beta 2.4. copyright ©StrannikCorp. All rights reserved. Service Pack 1 Update by Z_Kraf1er_Z"), WS_VISIBLE | WS_CHILD, 400 - 110 - 20, 20, 500 + 190 + 50, 25, hWnd, (HMENU)text1, NULL, NULL);
 
             CreateWindow(TEXT("STATIC"), TEXT("*************************************Привет, этот плеер проигрывает музыку в любых форматах*********************************************"), WS_VISIBLE | WS_CHILD, 200, 40, 899, 25, hWnd, (HMENU)text1, NULL, NULL);
-            CreateWindow(TEXT("STATIC"), TEXT("Расширение указывать не нужно. За вас это сделает плейлист =)"), WS_VISIBLE | WS_CHILD, 480 - 25-50, 60, 450, 20, hWnd, (HMENU)text1, NULL, NULL);
+            //CreateWindow(TEXT("STATIC"), TEXT("Расширение указывать не нужно. За вас это сделает плейлист =)"), WS_VISIBLE | WS_CHILD, 480 - 25-50, 60, 450, 20, hWnd, (HMENU)text1, NULL, NULL);
+            CreateWindow(TEXT("STATIC"), TEXT("Теперь появилась поддержка MIDI файлов =)"), WS_VISIBLE | WS_CHILD, 480 - 25, 60, 320, 20, hWnd, (HMENU)text1, NULL, NULL);
             CreateWindow(TEXT("STATIC"), TEXT("Тут уже имеется пара композиций"), WS_VISIBLE | WS_CHILD, 500, 100, 230, 20, hWnd, (HMENU)text1, NULL, NULL);
 
 
@@ -587,16 +611,16 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 
             hTrack = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND | TBS_ENABLESELRANGE, 450 - 150 - 100, 590 - 220 /*+ 40*/, 320, 30, hWnd, (HMENU)LENMUSIC, NULL, NULL);
-            SendMessage(hTrack, TBM_SETPOS, 0, 1);
-            SendMessage(hTrack, TBM_SETRANGEMAX, TRUE, 100);
+            SendMessage(hTrack, TBM_SETPOS, 0, 100);
+            SendMessage(hTrack, TBM_SETRANGEMAX, TRUE, 200);
 
 
             hTrack2 = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND | TBS_ENABLESELRANGE, 450 + 150 + 100, 590 - 220 /*+ 40*/, 320, 30, hWnd, (HMENU)LENMUSIC3, NULL, NULL);
             SendMessage(hTrack2, TBM_SETRANGE, 0, 0);
 
             FOR6COMPOSIT = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND | TBS_ENABLESELRANGE, 450-150-100, 590 - 220, 320, 30, hWnd, (HMENU)LENMUSIC2, NULL, NULL);
-            SendMessage(FOR6COMPOSIT, TBM_SETPOS, 0, 1);
-            SendMessage(FOR6COMPOSIT, TBM_SETRANGEMAX, TRUE, 100);
+            SendMessage(FOR6COMPOSIT, TBM_SETPOS, 0, 100);
+            SendMessage(FOR6COMPOSIT, TBM_SETRANGEMAX, TRUE, 200);
 
             FOR6COMPOSIT1 = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND | TBS_ENABLESELRANGE | WS_VISIBLE, 450+150+100, 590-220, 320, 30, hWnd, (HMENU)LENMUSIC5, NULL, NULL);
             SendMessage(FOR6COMPOSIT1, TBM_SETRANGE, 0, 0);
@@ -1029,11 +1053,14 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             //ofn.lpstrFilter = "MP3\0.MP3\0WAV\0.WAV\0";
             //ofn.lpstrFilter = ".mp3\0.wav\0.mp4\0.ogg\0";
             ofn.nFilterIndex = 1;
-            ofn.lpstrFileTitle = NULL;
-            ofn.nMaxFileTitle = 0;
+            /*ofn.lpstrFileTitle = NULL;
+            ofn.nMaxFileTitle = 0;*/
             //ofn.lpstrInitialDir = ".";
+            ofn.lpstrFilter = "Все файлы\0*.*\0";
+            ofn.lpstrTitle = "Выбор файла";
             ofn.lpstrInitialDir = "MusicPlayer\\Your";
             ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT | OFN_NOCHANGEDIR;   //Бага больше нет!  А я пока отойду.
+            ofn.FlagsEx = OFN_EX_NOPLACESBAR;
 
             if (GetOpenFileName(&ofn) == TRUE)
             {
@@ -1174,6 +1201,9 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         case BOMB:
         {
             system("start MusicPlayer\\Progs\\REVO\\RevoUnin.exe");
+        } break;
+        case BLUESCREENVIEW: {
+            system("start MusicPlayer\\Progs\\BSV\\BlueScreenView.exe");
         } break;
         case SPY:
         {
@@ -1880,19 +1910,19 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
     case WM_HSCROLL: {
         if (hTrack == (HWND)lParam /*&& wParam != 0*/)
-            BASS_ChannelSetAttribute(stro, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0));
+            BASS_ChannelSetAttribute(stro, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
         if (hTrack1 == (HWND)lParam)
-            BASS_ChannelSetAttribute(stro, BASS_ATTRIB_VOL, SendMessage(hTrack1, TBM_GETPOS, 0, 0));
+            BASS_ChannelSetAttribute(stro, BASS_ATTRIB_VOL, SendMessage(hTrack1, TBM_GETPOS, 0, 0) / 100.f);
         if (hTrack2 == (HWND)lParam && LOWORD(wParam) == SB_THUMBPOSITION /*|| LOWORD(wParam) == SB_PAGELEFT || LOWORD(wParam) == SB_PAGERIGHT*/)
             BASS_ChannelSetPosition(stro, BASS_ChannelSeconds2Bytes(stro, SendMessage(hTrack2, TBM_GETPOS, 0, 0)), BASS_POS_BYTE);
         if (FOR6COMPOSIT == (HWND)lParam)
         {
 
-            BASS_ChannelSetAttribute(stro, BASS_ATTRIB_VOL, SendMessage(FOR6COMPOSIT, TBM_GETPOS, 0, 0));
+            BASS_ChannelSetAttribute(stro, BASS_ATTRIB_VOL, SendMessage(FOR6COMPOSIT, TBM_GETPOS, 0, 0) / 100.f);
         }
         if (FOR6COMPOSIT1 == (HWND)lParam && LOWORD(wParam) == SB_THUMBPOSITION /*|| LOWORD(wParam) == SB_PAGELEFT || LOWORD(wParam) == SB_PAGERIGHT*/)
         {
-            BASS_ChannelSetPosition(stro, BASS_ChannelSeconds2Bytes(stro, SendMessage(FOR6COMPOSIT1, TBM_GETPOS, 40, 80)), BASS_POS_BYTE);
+            BASS_ChannelSetPosition(stro, BASS_ChannelSeconds2Bytes(stro, SendMessage(FOR6COMPOSIT1, TBM_GETPOS, 0, 0)), BASS_POS_BYTE);
             //BASS_ChannelSetPosition(VISTA, BASS_ChannelSeconds2Bytes(VISTA, SendMessage(FOR6COMPOSIT1, TBM_GETPOS, 40, 80)), BASS_POS_BYTE);
         }
     } break;
@@ -2054,8 +2084,12 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         break;*/
 
     case WM_DESTROY:
-        free_samples_all();
+        //free_samples_all();
         BASS_Free();
+        if (bassmidi != NULL) {
+            BASS_PluginEnable(bassmidi, FALSE); // отключить плагин
+            BASS_PluginFree(bassmidi); // выгрузить плагин
+        }
         //SetLayeredWindowAttributes(hWnd, NULL, 255, LWA_ALPHA);
         //SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
         Shell_NotifyIcon(NIM_DELETE, &notifyIconData);

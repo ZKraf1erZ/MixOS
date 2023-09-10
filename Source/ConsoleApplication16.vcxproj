@@ -194,6 +194,7 @@
     <ClCompile Include="вапвап1.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bassmidi.h" />
     <ClInclude Include="bass\c\bass.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="LoveInQuest.h" />

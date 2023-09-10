@@ -95,6 +95,9 @@
     <ClInclude Include="resource4.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="bassmidi.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Library Include="bass\c\x64\bass.lib">

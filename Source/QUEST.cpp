@@ -211,6 +211,8 @@
 //
 //            CreateWindow(TEXT("STATIC"), TEXT("Громкость"), WS_VISIBLE | WS_CHILD, 210+60, 180+80+30-10, 200, 20, hWnd, (HMENU)text1, NULL, NULL);
 //            hTrack = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | WS_VISIBLE, 210, 180+80-20, 200, 20, hWnd, (HMENU)LENMUSIC, NULL, NULL);
+//            SendMessage(hTrack, TBM_SETPOS, 0, 100);
+//            SendMessage(hTrack, TBM_SETRANGEMAX, TRUE, 200);
 //
 //            //SetWindowLong(hWnd, GWL_STYLE, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX | WS_VISIBLE);
 //            //CreateWindow(_T("STATIC"), _T("Не для шашнахме"), WS_VISIBLE | WS_CHILD, 650, 60, 150, 20, hWnd, (HMENU)text1, NULL, NULL);
@@ -791,17 +793,17 @@
 //        if (hTrack == (HWND)lParam)
 //        {
 //
-//            BASS_ChannelSetAttribute(QUEST_THEME, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(LADAV, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(REMIX, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(SVOBODA, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(KILL, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(KAVINSKY, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(ROSB, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(MODEL, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(PUTIN, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75)); 
-//            BASS_ChannelSetAttribute(JACKSON, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
-//            BASS_ChannelSetAttribute(KAVUL, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
+//            BASS_ChannelSetAttribute(QUEST_THEME, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(LADAV, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(REMIX, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(SVOBODA, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(KILL, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(KAVINSKY, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(ROSB, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(MODEL, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(PUTIN, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(JACKSON, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
+//            BASS_ChannelSetAttribute(KAVUL, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
 //        }
 //    } break;
 //

@@ -398,6 +398,8 @@
 //       
 //        //hTrack = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS | TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND|WS_VISIBLE, 20, 350, 320, 30, hWnd, (HMENU)LENMUSIC, NULL, NULL);
 //        hTrack = CreateWindow(TRACKBAR_CLASS, "SOUND", WS_CHILD | TBS_AUTOTICKS  | TBS_VERT|TBSTYLE_TOOLTIPS | LVS_EX_TRANSPARENTBKGND | WS_VISIBLE, 1100, 100, 25, 90, hWnd, (HMENU)LENMUSIC, NULL, NULL);
+//        SendMessage(hTrack, TBM_SETPOS, 0, 100);
+//        SendMessage(hTrack, TBM_SETRANGEMAX, TRUE, 200);
 //        CreateWindow(TEXT("STATIC"), TEXT("Громкость"), WS_VISIBLE | WS_CHILD, 1140, 130, 70, 18, hWnd, (HMENU)MAKEMAKE, NULL, NULL);    //Это не бегунок, а текст      //MAX VOLUME почему-то внизу.
 //
 //        // Не...
@@ -1258,7 +1260,7 @@
 //            {
 //                //Потому что недавно вышла статья, которая запрещает как-либо критиковать тот пиздец, что происходит... И если ее нарушить, то это минимум 15 лет тюрьмы. А я не хочу жизнь ломать свою...
 //
-//                BASS_ChannelSetAttribute(TITLED, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS,80,40)); //ПРОБОВАТЬ?
+//                BASS_ChannelSetAttribute(TITLED, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS,0,0) / 100.f); //ПРОБОВАТЬ?
 //                /*BASS_ChannelSetAttribute(ROBOCOP, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 80, 100));*/
 //                //Типа это в целом не обязательно, учитывая, что до конца композициивсё равно никто не дожидается.. Но тип.. так чист на досуге посмотреть. А сейчас всё работает, просто координаты надо подобрать
 //

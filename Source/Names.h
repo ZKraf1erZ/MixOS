@@ -532,3 +532,6 @@
 //#define MIXOSVER24  554
 #define MAKE_TOP_MOST_WINDOW 555
 #define MAKE_TOP_WINDOW 556
+
+// MixOS Beta 2.4 SP1 Update
+#define BLUESCREENVIEW 557

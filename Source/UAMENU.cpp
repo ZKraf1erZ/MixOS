@@ -377,6 +377,8 @@
 //        UASSAULT = BASS_StreamCreateFile(FALSE, "MusicPlayer\\UA\\UAORIG\\music\\2.ogg", 0, 0, 0);
 //        BASS_ChannelPlay(UASSAULT, false);
 //        ShowWindow(GetDlgItem(hWnd, UASEENENEMY1), SW_SHOW);
+//        ShowWindow(GetDlgItem(hWnd, UASEENENEMY2), SW_HIDE);
+//        ShowWindow(GetDlgItem(hWnd, UASEENENEMY3), SW_HIDE);
 //        }
 //        if (LOWORD(wParam) == MUA2)
 //        {
@@ -419,7 +421,9 @@
 //            BASS_ChannelPlay(UASSAULT, false);
 //            ABOUT = BASS_StreamCreateFile(FALSE, "MusicPlayer\\Your\\1A231.WAV", 0, 0, 0);
 //            BASS_ChannelPlay(ABOUT, false);
+//            ShowWindow(GetDlgItem(hWnd, UASEENENEMY1), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, UASEENENEMY2), SW_SHOW);
+//            ShowWindow(GetDlgItem(hWnd, UASEENENEMY3), SW_HIDE);
 //        }
 //        if (LOWORD(wParam) == MUA6)
 //        {
@@ -452,6 +456,8 @@
 //            BASS_ChannelPlay(UASSAULT, false);
 //            ABOUT = BASS_StreamCreateFile(FALSE, "MusicPlayer\\UA\\UAORIG\\music\\1A231.WAV", 0, 0, 0);
 //            BASS_ChannelPlay(ABOUT, false);
+//            ShowWindow(GetDlgItem(hWnd, UASEENENEMY1), SW_HIDE);
+//            ShowWindow(GetDlgItem(hWnd, UASEENENEMY2), SW_HIDE);
 //            ShowWindow(GetDlgItem(hWnd, UASEENENEMY3), SW_SHOW);
 //        }
 //        if (LOWORD(wParam) == MUA9)
@@ -544,7 +550,7 @@
 //    {
 //        if (hTrack == (HWND)lParam)
 //        {
-//            BASS_ChannelSetAttribute(QUEST_THEME, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 25, 75));
+//            BASS_ChannelSetAttribute(QUEST_THEME, BASS_ATTRIB_VOL, SendMessage(hTrack, TBM_GETPOS, 0, 0) / 100.f);
 //        }
 //    } break;
 //

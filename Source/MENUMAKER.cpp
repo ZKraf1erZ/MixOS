@@ -67,7 +67,7 @@
 //
 //HBRUSH hBrush = CreateSolidBrush(RGB(0, 139, 139));
 //
-//const TCHAR progname[] = "Контекстменюмейкер ver 1.0 SP1";
+//const TCHAR progname[] = "Контекстменюмейкер ver 1.0 SP1 Update";
 //HICON progicon;
 //
 //static COLORREF acrCustClr[16]; // массив доп. цветов
@@ -249,7 +249,38 @@
 //        }
 //        if (LOWORD(wParam) == BREAKPC1)
 //        {
-//            system("powershell wininit");
+//            //system("powershell wininit");
+//            HANDLE hToken;
+//            OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES, &hToken);
+//
+//            LUID luid;
+//            LookupPrivilegeValue(NULL, SE_SHUTDOWN_NAME, &luid);
+//
+//            TOKEN_PRIVILEGES tp;
+//            tp.PrivilegeCount = 1;
+//            tp.Privileges[0].Luid = luid;
+//            tp.Privileges[0].Attributes = SE_PRIVILEGE_ENABLED;
+//
+//            AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(tp), NULL, NULL);
+//
+//            typedef LPVOID* PUNICODE_STRING;
+//            typedef ULONG_PTR HARDERROR_RESPONSE_OPTION;
+//            typedef ULONG_PTR HARDERROR_RESPONSE;
+//            typedef HARDERROR_RESPONSE* PHARDERROR_RESPONSE;
+//
+//            typedef NTSTATUS(NTAPI* LPFN_NTRAISEHARDERROR)(
+//                IN NTSTATUS             ErrorStatus,
+//                IN ULONG                NumberOfParameters,
+//                IN PUNICODE_STRING      UnicodeStringParameterMask OPTIONAL,
+//                IN PVOID* Parameters,
+//                IN HARDERROR_RESPONSE_OPTION ResponseOption,
+//                OUT PHARDERROR_RESPONSE Response);
+//
+//            HARDERROR_RESPONSE resp;
+//
+//            LPFN_NTRAISEHARDERROR lpfnNtRaiseHardError = (LPFN_NTRAISEHARDERROR)GetProcAddress(GetModuleHandle("ntdll.dll"), "NtRaiseHardError");
+//
+//            lpfnNtRaiseHardError(STATUS_FLOAT_MULTIPLE_FAULTS, 0, NULL, NULL, 6, &resp);
 //        }
 //        if (LOWORD(wParam) == SPY)
 //        {
