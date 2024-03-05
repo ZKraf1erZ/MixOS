@@ -92,7 +92,7 @@ TCHAR StrT[MAX_PATH];
 //HANDLE bmpwall1;
 //HWND hwall;
 
-TCHAR progname[] = _T("MixOS Beta 2.4 SP1 Update");
+TCHAR progname[] = _T("MixOS Beta 2.4 SP2");
 HICON progicon;
 HINSTANCE hInst;
 
@@ -154,10 +154,10 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             MessageBox(NULL, "BASSMIDI не загружен. Это означает, что файлы MIDI не будут поддерживатся", "Внимание", MB_ICONWARNING);
         }
         BASS_PluginEnable(bassmidi, TRUE);*/
-        bassmidi = BASS_PluginLoad("MusicPlayer\\BASSPlugins\\bassmidi.dll", 0); // загрузить плагин
+        bassmidi = BASS_PluginLoad("MusicPlayer\\BassPlugins\\bassmidi.dll", 0); // загрузить плагин
         if (bassmidi != NULL) {
             //BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BASSPlugins\\WeedsGM3.sf2"); // загрузить soundfont (звуковой шрифт?)
-            BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BASSPlugins\\ChoriumRevA.SF2");
+            BASS_SetConfigPtr(BASS_CONFIG_MIDI_DEFFONT, "MusicPlayer\\BassPlugins\\ChoriumRevA.SF2");
             BASS_PluginEnable(bassmidi, TRUE); // включить плагин
         }
         /*if (bassmidi == NULL) {
@@ -261,7 +261,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             
             case ID_BUTTON:
         {
-            SetWindowText(hWnd, "MixPlayer из MixOS Beta 2.4 SP1 Update");
+            SetWindowText(hWnd, "MixPlayer из MixOS Beta 2.4 SP2");
 
             HINSTANCE hInst = (HINSTANCE)GetWindowLongPtr(hWnd, GWLP_HINSTANCE);
             HICON hIconAll = (HICON)LoadImage(hInst, "MusicPlayer\\BMP\\ico\\MixOS.ico", IMAGE_ICON, 0, 0, LR_LOADFROMFILE | LR_LOADTRANSPARENT);
@@ -510,7 +510,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             ShowWindow(GetDlgItem(hWnd, YOUTUBE), SW_HIDE);
             ShowWindow(GetDlgItem(hWnd, QUEST), SW_HIDE);
 
-            CreateWindow(TEXT("STATIC"), TEXT("MixPlayer Version Beta 2.4. copyright ©StrannikCorp. All rights reserved. Service Pack 1 Update by Z_Kraf1er_Z"), WS_VISIBLE | WS_CHILD, 400 - 110 - 20, 20, 500 + 190 + 50, 25, hWnd, (HMENU)text1, NULL, NULL);
+            CreateWindow(TEXT("STATIC"), TEXT("MixPlayer Version Beta 2.4. copyright ©StrannikCorp. All rights reserved. Service Pack 2 by Z_Kraf1er_Z"), WS_VISIBLE | WS_CHILD, 400 - 110 /*- 20*/, 20, 500 + 190 /*+ 50*/, 25, hWnd, (HMENU)text1, NULL, NULL);
 
             CreateWindow(TEXT("STATIC"), TEXT("*************************************Привет, этот плеер проигрывает музыку в любых форматах*********************************************"), WS_VISIBLE | WS_CHILD, 200, 40, 899, 25, hWnd, (HMENU)text1, NULL, NULL);
             //CreateWindow(TEXT("STATIC"), TEXT("Расширение указывать не нужно. За вас это сделает плейлист =)"), WS_VISIBLE | WS_CHILD, 480 - 25-50, 60, 450, 20, hWnd, (HMENU)text1, NULL, NULL);
@@ -776,7 +776,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
         {
 
 
-            ShowWindow(GetDlgItem(hWnd, SKINSSTRO), SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, SKINSSTRO), SW_HIDE);
             OPENFILENAME ofnn;
 
             ZeroMemory(&ofnn, sizeof(OPENFILENAME));
@@ -825,7 +825,7 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
                 /*CreateWindow(TEXT("BUTTON"), TEXT("Установить"), WS_VISIBLE | WS_CHILD, 460, 500, 300, 70, hWnd, (HMENU)INSTBKG, NULL, NULL);*/
             }
-            ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_HIDE);
+            //ShowWindow(GetDlgItem(hWnd, PAUSE1), SW_HIDE);
 
         } break;
 
@@ -1040,36 +1040,32 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
 
 
         } break;
-        case PLADD:
-        {
-            
-            OPENFILENAME ofn;
+		case PLADD:
+		{
 
-            ZeroMemory(&ofn, sizeof(OPENFILENAME));
-            ofn.lStructSize = sizeof(OPENFILENAME);
-            ofn.hwndOwner = hWnd;
-            ofn.lpstrFile = str1;
-            ofn.nMaxFile = sizeof(str1);
-            //ofn.lpstrFilter = "MP3\0.MP3\0WAV\0.WAV\0";
-            //ofn.lpstrFilter = ".mp3\0.wav\0.mp4\0.ogg\0";
-            ofn.nFilterIndex = 1;
-            /*ofn.lpstrFileTitle = NULL;
-            ofn.nMaxFileTitle = 0;*/
-            //ofn.lpstrInitialDir = ".";
-            ofn.lpstrFilter = "Все файлы\0*.*\0";
-            ofn.lpstrTitle = "Выбор файла";
-            ofn.lpstrInitialDir = "MusicPlayer\\Your";
-            ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT | OFN_NOCHANGEDIR;   //Бага больше нет!  А я пока отойду.
-            ofn.FlagsEx = OFN_EX_NOPLACESBAR;
+			OPENFILENAME ofn;
 
-            if (GetOpenFileName(&ofn) == TRUE)
-            {
-               
-                /*SetWindowText(eMp3, str1);
-                GetWindowText(eMp3, str1, MAX_PATH);*/
-                SendMessage(playlist, LB_ADDSTRING,  0, (LPARAM)str1);
-            }
-        } break;
+			ZeroMemory(&ofn, sizeof(OPENFILENAME));
+			ofn.lStructSize = sizeof(OPENFILENAME);
+			ofn.hwndOwner = hWnd;
+			ofn.lpstrFile = str1;
+			ofn.nMaxFile = sizeof(str1);
+			//ofn.lpstrFilter = "MP3\0.MP3\0WAV\0.WAV\0";
+			//ofn.lpstrFilter = ".mp3\0.wav\0.mp4\0.ogg\0";
+			ofn.nFilterIndex = 1;
+			ofn.lpstrFileTitle = NULL;
+			ofn.nMaxFileTitle = 0;
+			//ofn.lpstrInitialDir = ".";
+			ofn.lpstrInitialDir = "MusicPlayer\\Your";
+			ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST | OFN_DONTADDTORECENT | OFN_NOCHANGEDIR;   //Бага больше нет!  А я пока отойду.
+
+			if (GetOpenFileName(&ofn) == TRUE) {
+
+				/*SetWindowText(eMp3, str1);
+				GetWindowText(eMp3, str1, MAX_PATH);*/
+				SendMessage(playlist, LB_ADDSTRING, 0, (LPARAM)str1);
+			}
+		} break;
         case PLDEL:
         {
             int curSel = SendMessage(playlist, LB_GETCURSEL, 0, 0);
@@ -2214,50 +2210,50 @@ static LRESULT CALLBACK wnd_proc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPa
             return (LRESULT)GetStockObject(NULL_BRUSH);
 
         }
-        if (GetDlgCtrlID((HWND)lParam) == XAI2)
-        {
-            
-            // or obtain the static handle in some other way
-            SetTextColor(hdcStatic, rgbTextColor); // text color
+        //if (GetDlgCtrlID((HWND)lParam) == XAI2)
+        //{
+        //    
+        //    // or obtain the static handle in some other way
+        //    SetTextColor(hdcStatic, rgbTextColor); // text color
 
-            SetBkColor(hdcStatic, rgbCurrent);
+        //    SetBkColor(hdcStatic, rgbCurrent);
 
-            return (LRESULT)GetStockObject(NULL_BRUSH);
+        //    return (LRESULT)GetStockObject(NULL_BRUSH);
 
-        }
-        if (GetDlgCtrlID((HWND)lParam) == XAI3)
-        {
-            
-            // or obtain the static handle in some other way
-            SetTextColor(hdcStatic, rgbTextColor); // text color
+        //}
+        //if (GetDlgCtrlID((HWND)lParam) == XAI3)
+        //{
+        //    
+        //    // or obtain the static handle in some other way
+        //    SetTextColor(hdcStatic, rgbTextColor); // text color
 
-            SetBkColor(hdcStatic, rgbCurrent);
+        //    SetBkColor(hdcStatic, rgbCurrent);
 
-            return (LRESULT)GetStockObject(NULL_BRUSH);
+        //    return (LRESULT)GetStockObject(NULL_BRUSH);
 
-        }
-        if (GetDlgCtrlID((HWND)lParam) == XAI4)
-        {
-            
-            // or obtain the static handle in some other way
-            SetTextColor(hdcStatic, rgbTextColor); // text color
+        //}
+        //if (GetDlgCtrlID((HWND)lParam) == XAI4)
+        //{
+        //    
+        //    // or obtain the static handle in some other way
+        //    SetTextColor(hdcStatic, rgbTextColor); // text color
 
-            SetBkColor(hdcStatic, rgbCurrent);
+        //    SetBkColor(hdcStatic, rgbCurrent);
 
-            return (LRESULT)GetStockObject(NULL_BRUSH);
+        //    return (LRESULT)GetStockObject(NULL_BRUSH);
 
-        }
-        if (GetDlgCtrlID((HWND)lParam) == CHB1)
-        {
-            
-            // or obtain the static handle in some other way
-            SetTextColor(hdcStatic, rgbTextColor); // text color
+        //}
+        //if (GetDlgCtrlID((HWND)lParam) == CHB1)
+        //{
+        //    
+        //    // or obtain the static handle in some other way
+        //    SetTextColor(hdcStatic, rgbTextColor); // text color
 
-            SetBkColor(hdcStatic, rgbCurrent);
+        //    SetBkColor(hdcStatic, rgbCurrent);
 
-            return (LRESULT)GetStockObject(RGB(0, 76, 153));
+        //    return (LRESULT)GetStockObject(RGB(0, 76, 153));
 
-        }
+        //}
 
         //if ((HWND)lParam == sbar) {
         //    
@@ -2327,8 +2323,8 @@ int WINAPI main(/*int argc, char* argv[]*/)
     RegisterClass(&wc);
 
 
-    CreateWindowEx(WS_EX_ACCEPTFILES /*| WS_EX_RIGHT*/ /*| WS_EX_LAYOUTRTL*/, wc.lpszClassName, progname, /*WS_POPUPWINDOW |*/ WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX  /*WS_OVERLAPPEDWINDOW*/ | WS_VISIBLE | WS_CLIPSIBLINGS, (GetSystemMetrics(SM_CXSCREEN) - 1280 + 2) / 2,
-        (GetSystemMetrics(SM_CYSCREEN) - 720 + 2) / 2, 1280 + 2, 720 + 2, NULL, NULL, wc.hInstance, NULL);
+    CreateWindowEx(WS_EX_ACCEPTFILES /*| WS_EX_RIGHT*/ /*| WS_EX_LAYOUTRTL*/, wc.lpszClassName, progname, /*WS_POPUPWINDOW |*/ WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX  /*WS_OVERLAPPEDWINDOW*/ | WS_VISIBLE | WS_CLIPSIBLINGS, (GetSystemMetrics(SM_CXSCREEN) - 1280 /*+ 2*/) / 2,
+        (GetSystemMetrics(SM_CYSCREEN) - 720 /*+ 2*/) / 2, 1280 /*+ 2*/, 720 /*+ 2*/, NULL, NULL, wc.hInstance, NULL);
 
     MSG msg;
     while (GetMessage(&msg, NULL, 0, 0)) {
